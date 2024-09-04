@@ -12,25 +12,51 @@ export const adminBooksApi = createApi({
                 headers.set("Authorization", `Bearer ${token}`);
             }
 
-            headers.set("Content-Type", "application/json");
+            if (headers.get("Content-Type") === "multipart/form-data;") {
+                headers.delete("Content-Type");
+            } else {
+                headers.set("Content-Type", "application/json");
+            }
             return headers;
         },
     }),
     endpoints(build) {
         return {
             createBook: build.mutation({
-                query: (book) => ({
-                    url: "books/",
-                    method: "POST",
-                    body: book
-                })
+                query: (book) => {
+                    let formData = new FormData();
+                    for (let key in book) {
+                        formData.append(key, book[key]);
+                    }
+                    return ({
+                        url: "books",
+                        method: "POST",
+                        body: formData,
+                        headers: {
+                            "Content-Type": "multipart/form-data;"
+                        }
+                    });
+                }
             }),
             updateBook: build.mutation({
-                query: (book) => ({
-                    url: `books/${book.id}`,
-                    method: "PUT",
-                    body: book
-                })
+                query: (book) => {
+                    let formData = new FormData();
+                    for (let key in book) {
+                        if (key === "cover" && book[key] === null) {
+                            continue;
+                        }
+                        formData.append(key, book[key]);
+                    }
+
+                    return ({
+                        url: `books/${book.id}`,
+                        method: "PATCH",
+                        body: formData,
+                        headers: {
+                            "Content-Type": "multipart/form-data;"
+                        }
+                    });
+                }
             }),
             deleteBook: build.mutation({
                 query: (id) => ({

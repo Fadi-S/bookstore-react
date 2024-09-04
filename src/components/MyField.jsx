@@ -11,18 +11,39 @@ export default function MyField(props) {
             </div>
             <div className="mt-1 relative">
                 <Field
-                    id={props.id}
                     name={props.name}
-                    type={props.type}
-                    component={props.component || 'input'}
-                    required={props.required}
-                    autoComplete={props.autoComplete}
-                    rows={props.rows}
-                    className={[
-                        "block w-full rounded-md border-0 py-2 shadow-sm ring-1 focus:ring-2 focus:ring-inset ring-inset sm:text-sm sm:leading-6",
-                        props.error ? 'text-red-900 ring-red-300 placeholder:text-red-300 focus:ring-red-500' : 'text-gray-900 ring-gray-300 placeholder:text-gray-400 focus:ring-indigo-600'
-                    ]}
-                />
+                    render={({input, meta}) => {
+                        if (props.component === 'textarea') {
+                            return (
+                                <textarea
+                                    id={props.id}
+                                    required={props.required}
+                                    autoComplete={props.autoComplete}
+                                    rows={props.rows}
+                                    {...input}
+                                    className={[
+                                        "block w-full rounded-md border-0 py-2 shadow-sm ring-1 focus:ring-2 focus:ring-inset ring-inset sm:text-sm sm:leading-6",
+                                        meta.error && meta.touched ? 'text-red-900 ring-red-300 placeholder:text-red-300 focus:ring-red-500' : 'text-gray-900 ring-gray-300 placeholder:text-gray-400 focus:ring-indigo-600'
+                                    ]}>
+                                </textarea>
+                            );
+                        }
+
+                        return (
+                            <input
+                                id={props.id}
+                                type={props.type}
+                                required={props.required}
+                                autoComplete={props.autoComplete}
+                                {...input}
+                                className={[
+                                    "block w-full rounded-md border-0 py-2 shadow-sm ring-1 focus:ring-2 focus:ring-inset ring-inset sm:text-sm sm:leading-6",
+                                    meta.error && meta.touched ? 'text-red-900 ring-red-300 placeholder:text-red-300 focus:ring-red-500' : 'text-gray-900 ring-gray-300 placeholder:text-gray-400 focus:ring-indigo-600'
+                                ]}/>
+                        );
+                    }}
+                >
+                </Field>
                 {props.error && (
                     <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-3">
                         <ExclamationCircleIcon aria-hidden="true" className="h-5 w-5 text-red-500"/>
