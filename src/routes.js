@@ -5,14 +5,14 @@ import BooksIndex from "./pages/books_index";
 import Layout from "./pages/layout";
 import Profile from "./pages/profile";
 import ShowBook from "./pages/book_show";
+import CreateBook from "./pages/book_create";
 
 export default (
-    <Route path="/">
-        <Route element={<Layout />}>
-            <Route index element={<BooksIndex />} />
-            <Route path="/books/:book" element={<ShowBook />} />
+    <Route path="/" element={<Layout />}>
+        <Route index element={<BooksIndex />} />
+        <Route path="/books/create" element={<CreateBook />} />
+        <Route path="/books/:book" element={<ShowBook />} />
 
-            <Route path="/profile" element={<Profile />} />
-        </Route>
+        <Route path="/profile" element={<Profile />} />
     </Route>
 );

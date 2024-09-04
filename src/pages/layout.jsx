@@ -1,5 +1,5 @@
-import React, {useEffect, useState} from "react";
-import {Link, Outlet, useLocation } from "react-router-dom";
+import React, {useEffect, useRef, useState} from "react";
+import {Link, Outlet, useLocation, useNavigate} from "react-router-dom";
 
 import {Disclosure, DisclosureButton, DisclosurePanel, Menu, MenuButton, MenuItem, MenuItems} from '@headlessui/react'
 import {Bars3Icon, XMarkIcon} from '@heroicons/react/24/outline'
@@ -16,16 +16,30 @@ function classNames(...classes) {
 
 
 export default function Layout() {
+    const dispatch = useAppDispatch();
+    const user = useAppSelector((state) => state.auth.user);
+    const authorities = useAppSelector((state) => state.auth.authorities);
 
     const [open, setOpen] = useState(false);
     const [showRegister, setShowRegister] = useState(false);
 
     const [navigation, setNavigation] = useState([
         {name: 'Home', href: '/', current: false},
-        {name: 'Team', href: '#', current: false},
-        {name: 'Projects', href: '#', current: false},
-        {name: 'Calendar', href: '#', current: false},
+        {name: 'My Orders', href: '/orders', current: false},
     ]);
+
+    const initialized = useRef(false)
+
+    useEffect(() => {
+        if (!initialized.current) {
+            initialized.current = true
+
+            if(authorities && authorities.includes("ADMIN")) {
+                navigation.push({name: 'Manage Orders', href: '/manage/orders', current: false});
+                navigation.push({name: 'Add Book', href: '/books/create', current: false});
+            }
+        }
+    }, []);
 
     const location = useLocation();
 
@@ -42,14 +56,15 @@ export default function Layout() {
         document.title = titles[window.location.pathname] ? titles[window.location.pathname] + " | Bookstore" : 'Bookstore';
     }, [location]);
 
-    const dispatch = useAppDispatch();
-    const user = useAppSelector((state) => state.auth.user);
 
     const [logoutUser] = useLogoutMutation();
+
+    const nav = useNavigate();
 
     const onLogout = () => {
         logoutUser({});
         dispatch(clearAuth());
+        nav("/");
     };
 
     const userNavigation = [

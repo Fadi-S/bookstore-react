@@ -1,20 +1,15 @@
 import {useParams} from "react-router-dom";
 import {useFetchBookQuery} from "../features/books/books_slice";
 import {
-    Disclosure, DisclosureButton, DisclosurePanel,
+    Disclosure,
     TabGroup,
     TabPanel,
 } from '@headlessui/react'
-import {StarIcon} from '@heroicons/react/20/solid'
 import {BOOK_IMAGE_URL, USER_IMAGE_URL} from "../app/consts";
 import {useEffect} from "react";
 import Rating from "../components/rating";
-import {MinusIcon, PlusIcon} from "@heroicons/react/24/solid";
 import ReadMore from "../components/readmore";
 
-function classNames(...classes) {
-    return classes.filter(Boolean).join(' ')
-}
 
 export default function ShowBook() {
 
@@ -139,9 +134,9 @@ export default function ShowBook() {
                                                     <h4 className="text-gray-600 font-bold">{review.user.firstName} {review.user.lastName}</h4>
                                                     <Rating rating={review.rating}/>
                                                 </div>
-                                                <p className="mt-1">
+                                                <div className="mt-1">
                                                     <ReadMore text={review.body} maxLength={100}/>
-                                                </p>
+                                                </div>
                                             </div>
                                         </div>
                                     </Disclosure>

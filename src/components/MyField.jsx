@@ -3,7 +3,7 @@ import {ExclamationCircleIcon} from "@heroicons/react/20/solid";
 
 export default function MyField(props) {
     return (
-        <div>
+        <div className={props.className}>
             <div className="flex items-center justify-between">
                 <label htmlFor={props.id} className="block text-sm font-medium leading-6 text-gray-900">
                     {props.label}
@@ -14,9 +14,10 @@ export default function MyField(props) {
                     id={props.id}
                     name={props.name}
                     type={props.type}
-                    component="input"
+                    component={props.component || 'input'}
                     required={props.required}
                     autoComplete={props.autoComplete}
+                    rows={props.rows}
                     className={[
                         "block w-full rounded-md border-0 py-2 shadow-sm ring-1 focus:ring-2 focus:ring-inset ring-inset sm:text-sm sm:leading-6",
                         props.error ? 'text-red-900 ring-red-300 placeholder:text-red-300 focus:ring-red-500' : 'text-gray-900 ring-gray-300 placeholder:text-gray-400 focus:ring-indigo-600'

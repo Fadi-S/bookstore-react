@@ -24,28 +24,8 @@ export const booksApi = createApi({
             fetchBook: build.query({
                 query: (id) => `books/${id}`
             }),
-            createBook: build.mutation({
-                query: (book) => ({
-                    url: "books",
-                    method: "POST",
-                    body: book
-                })
-            }),
-            updateBook: build.mutation({
-                query: (book) => ({
-                    url: `books/${book.id}`,
-                    method: "PUT",
-                    body: book
-                })
-            }),
-            deleteBook: build.mutation({
-                query: (id) => ({
-                    url: `books/${id}`,
-                    method: "DELETE"
-                })
-            }),
         };
     }
 });
 
-export const { useFetchBooksQuery, useFetchBookQuery, useCreateBookMutation, useUpdateBookMutation, useDeleteBookMutation } = booksApi;
+export const { useFetchBooksQuery, useFetchBookQuery } = booksApi;
