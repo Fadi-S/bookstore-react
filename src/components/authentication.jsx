@@ -1,12 +1,15 @@
 import {useLoginMutation, useRegisterMutation} from "../features/authentication/authentication_slice";
-import {useEffect, useState} from "react";
+import {useEffect} from "react";
 
 import { setToken, setAuthorities, setUser } from "../features/authentication/authentication_slice";
-import {useAppDispatch} from "../app/hooks";
+import {useAppDispatch, useAppSelector} from "../app/hooks";
 import Login from "./login";
 import Register from "./register";
+import { openRegisterForm, openLoginForm } from "../features/page/page_slice";
 
 export default function Authentication(props) {
+
+    const authForm = useAppSelector(state => state.page.authForm);
 
     const [
         loginUser,
@@ -53,27 +56,29 @@ export default function Authentication(props) {
         }
     }, [registerData, dispatch, isRegisterSuccess, props]);
 
-    const [showRegister, setShowRegister] = useState(props.showRegister);
-
-    if(showRegister) {
+    if(authForm === "register") {
         return (
             <Register
-                onLogin={() => setShowRegister(false)}
+                onLogin={() => dispatch(openLoginForm())}
                 error={registerError}
                 isLoading={isRegisterLoading}
                 isSuccess={isRegisterSuccess}
                 onSubmit={registerUser}
             />
         );
+    } else if(authForm === "login") {
+        return (
+            <Login
+                onRegister={() => dispatch(openRegisterForm())}
+                error={loginError}
+                isLoading={isLoginLoading}
+                isSuccess={isLoginSuccess}
+                onSubmit={loginUser}
+            />
+        );
     }
 
     return (
-        <Login
-            onRegister={() => setShowRegister(true)}
-            error={loginError}
-            isLoading={isLoginLoading}
-            isSuccess={isLoginSuccess}
-            onSubmit={loginUser}
-        />
+        <div></div>
     );
 }

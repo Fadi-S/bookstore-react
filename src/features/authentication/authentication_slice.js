@@ -57,6 +57,7 @@ export const authenticationApi = createApi({
             return headers;
         }
     }),
+    tagTypes: ["Authentication"],
     endpoints(build) {
         return {
             login: build.mutation({
@@ -66,14 +67,16 @@ export const authenticationApi = createApi({
                         method: "POST",
                         body: {email, password},
                     });
-                }
+                },
+                providesTags: ["Authentication"],
             }),
             register: build.mutation({
                 query: ({firstName, lastName, email, password}) => ({
                     url: "register",
                     method: "POST",
                     body: {firstName, lastName, email, password}
-                })
+                }),
+                providesTags: ["Authentication"],
             }),
             logout: build.mutation({
                 query: () => ({
@@ -82,7 +85,8 @@ export const authenticationApi = createApi({
                     headers: {
                         "Authorization": "",
                     }
-                })
+                }),
+                invalidatesTags: ["Authentication"],
             }),
         };
     }

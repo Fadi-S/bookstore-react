@@ -20,6 +20,7 @@ export const adminBooksApi = createApi({
             return headers;
         },
     }),
+    tagTypes: ['Cart', 'Books'],
     endpoints(build) {
         return {
             createBook: build.mutation({
@@ -36,7 +37,8 @@ export const adminBooksApi = createApi({
                             "Content-Type": "multipart/form-data;"
                         }
                     });
-                }
+                },
+                invalidatesTags: ['Books'],
             }),
             updateBook: build.mutation({
                 query: (book) => {
@@ -56,13 +58,15 @@ export const adminBooksApi = createApi({
                             "Content-Type": "multipart/form-data;"
                         }
                     });
-                }
+                },
+                invalidatesTags: ['Books', 'Cart'],
             }),
             deleteBook: build.mutation({
                 query: (id) => ({
                     url: `books/${id}`,
                     method: "DELETE"
-                })
+                }),
+                invalidatesTags: ['Books', 'Cart'],
             }),
         };
     }

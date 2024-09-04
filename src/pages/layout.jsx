@@ -1,5 +1,5 @@
 import React, {useEffect, useRef, useState} from "react";
-import {Link, Outlet, useLocation, useNavigate} from "react-router-dom";
+import {Link, Outlet, useLocation} from "react-router-dom";
 
 import {Disclosure, DisclosureButton, DisclosurePanel, Menu, MenuButton, MenuItem, MenuItems} from '@headlessui/react'
 import {Bars3Icon, XMarkIcon} from '@heroicons/react/24/outline'
@@ -9,6 +9,10 @@ import {useAppDispatch, useAppSelector} from "../app/hooks";
 import Authentication from "../components/authentication";
 import {USER_IMAGE_URL} from "../app/consts";
 import logo from "../logo.svg";
+import {ShoppingCartIcon} from "@heroicons/react/24/solid";
+import {useFetchCartQuery} from "../features/cart/cart_slice";
+import { openRegisterForm, openLoginForm, closeAuthForm } from "../features/page/page_slice";
+import Notification from "../components/notification";
 
 function classNames(...classes) {
     return classes.filter(Boolean).join(' ')
@@ -19,20 +23,23 @@ export default function Layout() {
     const dispatch = useAppDispatch();
     const user = useAppSelector((state) => state.auth.user);
     const authorities = useAppSelector((state) => state.auth.authorities);
-
-    const [open, setOpen] = useState(false);
-    const [showRegister, setShowRegister] = useState(false);
+    const authForm = useAppSelector((state) => state.page.authForm);
 
     const [navigation, setNavigation] = useState([
         {name: 'Home', href: '/', current: false},
-        {name: 'My Orders', href: '/orders', current: false},
     ]);
 
     const initialized = useRef(false)
 
+    const { data: cart, isFetching: isCartLoading} = useFetchCartQuery();
+
     useEffect(() => {
         if (!initialized.current) {
             initialized.current = true
+
+            if (user) {
+                navigation.push({name: 'My Orders', href: '/orders', current: false});
+            }
 
             if(authorities && authorities.includes("ADMIN")) {
                 navigation.push({name: 'Manage Orders', href: '/manage/orders', current: false});
@@ -55,6 +62,7 @@ export default function Layout() {
             '/manage/orders': 'Manage Orders',
             '/books/create': 'Add Book',
             '/orders': 'My Orders',
+            '/cart': 'Cart',
         };
         document.title = titles[window.location.pathname] ? titles[window.location.pathname] + " | Bookstore" : 'Bookstore';
     }, [location]);
@@ -62,12 +70,10 @@ export default function Layout() {
 
     const [logoutUser] = useLogoutMutation();
 
-    const nav = useNavigate();
-
     const onLogout = () => {
         logoutUser({});
         dispatch(clearAuth());
-        nav("/");
+        window.location.replace("/");
     };
 
     const userNavigation = [
@@ -79,10 +85,10 @@ export default function Layout() {
         <>
             <div className="min-h-full">
                 <Modal
-                    open={open}
-                    onClose={() => setOpen(false)}
+                    open={!!authForm}
+                    onClose={() => dispatch(closeAuthForm())}
                 >
-                    <Authentication showRegister={showRegister} onSuccess={() => setOpen(false)}/>
+                    <Authentication onSuccess={() => dispatch(closeAuthForm())}/>
                 </Modal>
                 <Disclosure as="nav" className="bg-white shadow-sm">
                     <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
@@ -123,7 +129,7 @@ export default function Layout() {
                                     <div className="space-x-3">
                                         <button
                                             type="button"
-                                            onClick={() => {setOpen(true); setShowRegister(false)}}
+                                            onClick={() => dispatch(openLoginForm())}
                                             className="rounded-md bg-indigo-50 px-3 py-2 text-sm font-semibold text-indigo-600 shadow-sm hover:bg-indigo-100"
                                         >
                                             Sign In
@@ -131,16 +137,28 @@ export default function Layout() {
 
                                         <button
                                             type="button"
-                                            onClick={() => {setOpen(true); setShowRegister(true)}}
+                                            onClick={() => dispatch(openRegisterForm())}
                                             className="inline-flex items-center gap-x-1.5 rounded-md bg-indigo-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
                                         >
                                             Sign Up
                                         </button>
                                     </div>
                                 )}
+
                                 {
                                     user != null && (
-                                        <Menu as="div" className="relative ml-3">
+                                        <>
+                                        <Link
+                                            to="/cart"
+                                            className="relative rounded-full bg-white p-1 text-gray-400 hover:text-gray-500 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
+                                        >
+                                            <span className="sr-only">View notifications</span>
+                                            <ShoppingCartIcon aria-hidden="true" className="h-6 w-6" />
+                                            {!isCartLoading && <span
+                                                className="absolute -top-2 -right-2 bg-red-500 text-white rounded-full px-1.5 py-0.5 text-xs">{cart.items.length}</span>}
+                                        </Link>
+
+                                            <Menu as="div" className="relative ml-3">
                                             <div>
                                                 <MenuButton
                                                     className="relative flex rounded-full bg-white text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2">
@@ -172,6 +190,7 @@ export default function Layout() {
                                                 ))}
                                             </MenuItems>
                                         </Menu>
+                                        </>
                                     )
                                 }
                             </div>
@@ -210,14 +229,27 @@ export default function Layout() {
                             ))}
 
                             {user == null && (
+                                <>
                                 <DisclosureButton
                                     key={"login"}
                                     as="button"
+                                    onClick={() => dispatch(openLoginForm())}
                                     className='border-transparent text-gray-600 hover:border-gray-300 hover:bg-gray-50
                                         hover:text-gray-800 block border-l-4 py-2 pl-3 pr-4 text-base font-medium'
                                 >
                                     Sign in
                                 </DisclosureButton>
+
+                                <DisclosureButton
+                                    key={"register"}
+                                    as="button"
+                                    onClick={() => dispatch(openRegisterForm())}
+                                    className='border-transparent text-gray-600 hover:border-gray-300 hover:bg-gray-50
+                                                hover:text-gray-800 block border-l-4 py-2 pl-3 pr-4 text-base font-medium'
+                                >
+                                    Sign up
+                                </DisclosureButton>
+                                </>
                             )}
                         </div>
                         {
@@ -225,23 +257,45 @@ export default function Layout() {
                                 <div className="border-t border-gray-200 pb-3 pt-4">
                                     <div className="flex items-center px-4">
                                         <div className="flex-shrink-0">
-                                            <img alt="" src={USER_IMAGE_URL + user.picture} className="h-10 w-10 rounded-full"/>
+                                            <img alt="" src={USER_IMAGE_URL + user.picture}
+                                                 className="h-10 w-10 rounded-full"/>
                                         </div>
                                         <div className="ml-3">
-                                            <div className="text-base font-medium text-gray-800">{user.name}</div>
+                                            <div className="text-base font-medium text-gray-800">{user.firstName} {user.lastName}</div>
                                             <div className="text-sm font-medium text-gray-500">{user.email}</div>
                                         </div>
+                                        <Link
+                                            to="/cart"
+                                            className="relative ml-auto flex-shrink-0 rounded-full bg-white p-1 text-gray-400 hover:text-gray-500 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
+                                        >
+                                            <span className="sr-only">View notifications</span>
+                                            <ShoppingCartIcon aria-hidden="true" className="h-6 w-6"/>
+                                            {!isCartLoading && <span
+                                                className="absolute -top-2 -right-2 bg-red-500 text-white rounded-full px-1.5 py-0.5 text-xs">{cart.items.length}</span>}
+                                        </Link>
                                     </div>
                                     <div className="mt-3 space-y-1">
                                         {userNavigation.map((item) => (
-                                            <DisclosureButton
-                                                key={item.name}
-                                                as={Link}
-                                                to={item.href}
-                                                className="block px-4 py-2 text-base font-medium text-gray-500 hover:bg-gray-100 hover:text-gray-800"
+                                            item.onClick == null ?
+                                                (<DisclosureButton
+                                                    key={item.name}
+                                                    as={Link}
+                                                    to={item.href}
+                                                    className="block px-4 py-2 text-base font-medium text-gray-500 hover:bg-gray-100 hover:text-gray-800"
                                             >
                                                 {item.name}
-                                            </DisclosureButton>
+                                            </DisclosureButton>)
+                                                :
+                                                (
+                                                    <DisclosureButton
+                                                        key={item.name}
+                                                        as="button"
+                                                        onClick={item.onClick}
+                                                        className="block w-full text-start px-4 py-2 text-base font-medium text-gray-500 hover:bg-gray-100 hover:text-gray-800"
+                                                    >
+                                                        {item.name}
+                                                    </DisclosureButton>
+                                                )
                                         ))}
                                     </div>
                                 </div>
@@ -252,6 +306,7 @@ export default function Layout() {
 
                 <div>
                     <main>
+                        <Notification />
                         <div className="mx-auto max-w-7xl px-4 py-4 sm:px-6 lg:px-8">
                             <Outlet/>
                         </div>

@@ -1,7 +1,8 @@
 import React from "react";
 import {useFetchBooksQuery} from "../features/books/books_slice";
 import {BOOK_IMAGE_URL} from "../app/consts";
-import {Link, useSearchParams} from "react-router-dom";
+import {Link, useNavigate, useSearchParams} from "react-router-dom";
+import {useAddToCartMutation} from "../features/cart/cart_slice";
 
 
 function renderEmptyStates(number = 3) {
@@ -30,7 +31,7 @@ function renderEmptyStates(number = 3) {
     );
 }
 
-function renderBooks(books) {
+function renderBooks(books, addToCart) {
     return books.map(book => (
         <div key={book.id} className="overflow-hidden rounded-lg bg-white shadow">
             <div className="px-4 py-5 sm:p-4 h-full">
@@ -60,10 +61,10 @@ function renderBooks(books) {
                     </Link>
 
                     <div className="mt-2">
-                        <button>
-                                    <span className="text-sm font-semibold text-blue-700">
-                                        Add to Cart
-                                    </span>
+                        <button type="button" onClick={() => addToCart(book.id)}>
+                                <span className="text-sm font-semibold text-blue-700">
+                                    Add to Cart
+                                </span>
                         </button>
                     </div>
                 </div>
@@ -77,6 +78,15 @@ export default function BooksIndex() {
     let [size, page] = [parseInt(searchParams.get("size")), parseInt(searchParams.get("page"))];
     const {data = [], isFetching} = useFetchBooksQuery([size, page]);
 
+
+    const [addToCart, {isLoading: isAddingToCart}] = useAddToCartMutation();
+
+    const navigate = useNavigate();
+    const myAddToCart = (id) => {
+        addToCart({id});
+        navigate("/cart");
+    };
+
     if (isFetching || data == null) {
         size = !size ? 4 : Math.min(size, 12);
         return (
@@ -88,7 +98,7 @@ export default function BooksIndex() {
 
     return (
         <div className="grid gap-4 grid-cols-2 sm:grid-cols-4 lg:grid-cols-6">
-            {renderBooks(data)}
+            {renderBooks(data, myAddToCart)}
         </div>
     );
 }

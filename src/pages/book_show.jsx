@@ -14,6 +14,7 @@ import ReadMore from "../components/readmore";
 import {useAppDispatch, useAppSelector} from "../app/hooks";
 import Modal from "../components/modal";
 import {ExclamationTriangleIcon} from "@heroicons/react/24/outline";
+import {useAddToCartMutation} from "../features/cart/cart_slice";
 
 
 export default function ShowBook() {
@@ -24,6 +25,14 @@ export default function ShowBook() {
 
     const authorities = useAppSelector((state) => state.auth.authorities);
 
+    const [addToCart, {isLoading: isAddingToCart}] = useAddToCartMutation();
+
+    const navigate = useNavigate();
+    const myAddToCart = (id) => {
+        addToCart({id});
+        navigate("/cart");
+    };
+
     useEffect(() => {
         if (!isFetching)
             document.title = book.title + " | Bookstore";
@@ -33,7 +42,6 @@ export default function ShowBook() {
 
     const [deleteBook, {isSuccess: isDeleteSuccess, isLoading: isDeleteLoading}] = useDeleteBookMutation();
 
-    const navigate = useNavigate();
     const dispatch = useAppDispatch();
     useEffect(() => {
         if (isDeleteSuccess) {
@@ -192,17 +200,26 @@ export default function ShowBook() {
 
                             </div>
 
-                            <form className="mt-6">
+                            {
+                                !isFetching && book && book.quantity > 0 && (
+                                    <div className="mt-10 flex">
+                                        <button
+                                            type="button"
+                                            onClick={() => myAddToCart(book.id)}
+                                            className="flex max-w-xs flex-1 items-center justify-center rounded-md border border-transparent bg-indigo-600 px-8 py-3 text-base font-medium text-white hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 focus:ring-offset-gray-50 sm:w-full"
+                                        >
+                                            {isAddingToCart ? "Adding..." : "Add to cart"}
+                                        </button>
+                                    </div>
+                                )
+                            }
 
-                                <div className="mt-10 flex">
-                                    <button
-                                        type="submit"
-                                        className="flex max-w-xs flex-1 items-center justify-center rounded-md border border-transparent bg-indigo-600 px-8 py-3 text-base font-medium text-white hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 focus:ring-offset-gray-50 sm:w-full"
-                                    >
-                                        Add to cart
-                                    </button>
+                            {!isFetching && book && book.quantity === 0 && (
+                                <div className="mt-10">
+                                    <p className="text-red-500 font-semibold">Out of stock</p>
                                 </div>
-                            </form>
+                            )}
+
 
                             <section aria-labelledby="details-heading" className="mt-12">
                                 {!isFetching && book && book.reviews.length > 0 && (

@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 import { Field } from 'react-final-form';
 import { ExclamationCircleIcon } from '@heroicons/react/20/solid';
-import {BOOK_IMAGE_URL} from "../app/consts";
 
 export default function FileField({ name, ...props }) {
     const [preview, setPreview] = useState(null);
