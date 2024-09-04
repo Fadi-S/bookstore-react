@@ -1,19 +1,25 @@
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
-import { ROOT_URL, TOKEN } from "../../app/consts";
+import { ROOT_URL } from "../../app/consts";
 
 export const booksApi = createApi({
     reducerPath: "booksApi",
     baseQuery: fetchBaseQuery({
         baseUrl: ROOT_URL,
-        headers: {
-            "Content-Type": "application/json",
-            "Authorization": `Bearer ${TOKEN}`
+        prepareHeaders: (headers, { getState }) => {
+            const token = getState().auth.token;  // Access the token from the Redux state
+
+            if (token) {
+                headers.set("Authorization", `Bearer ${token}`);
+            }
+
+            headers.set("Content-Type", "application/json");
+            return headers;
         },
     }),
     endpoints(build) {
         return {
             fetchBooks: build.query({
-                query: (size=2, page=1,) => `books?size=${size}&page=${page}`
+                query: ([size, page]=[2, 1]) => `books?size=${size}&page=${page}`
             }),
             fetchBook: build.query({
                 query: (id) => `books/${id}`
