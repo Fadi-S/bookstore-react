@@ -1,15 +1,19 @@
-import {Link, useParams} from "react-router-dom";
-import {useFetchBookQuery} from "../features/books/books_slice";
+import {Link, useNavigate, useParams} from "react-router-dom";
+import {booksApi, useFetchBookQuery} from "../features/books/books_slice";
+import {useDeleteBookMutation} from "../features/books/admin_book_slice";
 import {
+    DialogTitle,
     Disclosure,
     TabGroup,
     TabPanel,
 } from '@headlessui/react'
 import {BOOK_IMAGE_URL, USER_IMAGE_URL} from "../app/consts";
-import {useEffect} from "react";
+import {useEffect, useState} from "react";
 import Rating from "../components/rating";
 import ReadMore from "../components/readmore";
-import {useAppSelector} from "../app/hooks";
+import {useAppDispatch, useAppSelector} from "../app/hooks";
+import Modal from "../components/modal";
+import {ExclamationTriangleIcon} from "@heroicons/react/24/outline";
 
 
 export default function ShowBook() {
@@ -25,20 +29,96 @@ export default function ShowBook() {
             document.title = book.title + " | Bookstore";
     }, [isFetching]);
 
+    const [deleteBookModal, setDeleteBookModal] = useState(false);
+
+    const [deleteBook, {isSuccess: isDeleteSuccess, isLoading: isDeleteLoading}] = useDeleteBookMutation();
+
+    const navigate = useNavigate();
+    const dispatch = useAppDispatch();
+    useEffect(() => {
+        if (isDeleteSuccess) {
+
+            setTimeout(() => {
+                dispatch(booksApi.util.resetApiState());
+
+                setDeleteBookModal(false);
+
+                navigate("/");
+            }, 2000);
+        }
+    }, [isDeleteSuccess]);
+
     return (
         <div>
             <div className="bg-white relative">
                 {authorities.includes("ADMIN") && (
-                    <div className="absolute right-0 top-0 mr-3 mt-5">
+                    <div className="absolute right-0 top-0 mr-3 mt-5 space-x-3 ">
                         <Link className="rounded-md bg-indigo-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600" to={`/books/${bookId}/edit`}>
                             Edit Book
                         </Link>
+
+                        <button
+                            type="button"
+                            onClick={() => setDeleteBookModal(true)}
+                            className="rounded-md bg-red-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-red-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-red-600" to={`/books/${bookId}/edit`}>
+                            Delete Book
+                        </button>
+
+                        <Modal open={deleteBookModal} onClose={() => setDeleteBookModal(false)}>
+                            <div>
+                                <div className="sm:flex sm:items-start">
+                                    <div
+                                        className="mx-auto flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-full bg-red-100 sm:mx-0 sm:h-10 sm:w-10">
+                                        <ExclamationTriangleIcon aria-hidden="true" className="h-6 w-6 text-red-600"/>
+                                    </div>
+                                    <div className="mt-3 text-center sm:ml-4 sm:mt-0 sm:text-left">
+                                        <DialogTitle as="h3"
+                                                     className="text-base font-semibold leading-6 text-gray-900">
+                                            Delete book
+                                        </DialogTitle>
+                                        <div className="mt-2">
+                                            <p className="text-sm text-gray-500">
+                                                Are you sure you want to delete this book? All data  associated with this book will
+                                                be permanently removed from
+                                                our servers forever. This action cannot be undone.
+                                            </p>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div className="mt-5 sm:mt-4 sm:flex sm:flex-row-reverse">
+                                    {
+                                        isDeleteSuccess ? (
+                                            <div
+                                                className="flex items-center justify-center w-full rounded-md bg-green-100 px-3 py-2 text-sm font-semibold text-green-800 shadow-sm sm:ml-3 sm:w-auto">
+                                                Book deleted successfully
+                                            </div>
+                                        ) : <>
+                                            <button
+                                                type="button"
+                                                onClick={() => deleteBook(bookId)}
+                                                className="inline-flex w-full justify-center rounded-md bg-red-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-red-500 sm:ml-3 sm:w-auto"
+                                            >
+                                                {isDeleteLoading ? 'Deleting...' : 'Delete'}
+                                            </button>
+                                            <button
+                                                type="button"
+                                                data-autofocus
+                                                onClick={() => setDeleteBookModal(false)}
+                                                className="mt-3 inline-flex w-full justify-center rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50 sm:mt-0 sm:w-auto"
+                                            >
+                                                Cancel
+                                            </button>
+                                        </>
+                                    }
+                                </div>
+                            </div>
+                        </Modal>
                     </div>
                 )}
                 <div className="mx-auto max-w-2xl px-4 py-16 sm:px-6 sm:py-24 lg:max-w-7xl lg:px-8">
-                    <div className="lg:grid lg:grid-cols-2 lg:items-start lg:gap-x-8">
+                    <div className="lg:grid lg:grid-cols-12 lg:items-start lg:gap-x-8">
                         {/* Image gallery */}
-                        <TabGroup className="flex flex-col-reverse">
+                        <TabGroup className="flex flex-col-reverse col-span-4">
                             <TabPanel>
                                 {
                                     book == null || isFetching ? (
@@ -55,7 +135,7 @@ export default function ShowBook() {
                         </TabGroup>
 
                         {/* Product info */}
-                        <div className="mt-10 px-4 sm:mt-16 sm:px-0 lg:mt-0">
+                        <div className="mt-10 px-4 sm:mt-16 sm:px-0 lg:mt-0 col-span-8">
                             {
                                 book == null || isFetching ? (
                                     <>
