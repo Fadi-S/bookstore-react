@@ -1,5 +1,5 @@
 import React, {useEffect, useState} from "react";
-import {Outlet} from "react-router-dom";
+import {Link, Outlet, useLocation } from "react-router-dom";
 
 import {Disclosure, DisclosureButton, DisclosurePanel, Menu, MenuButton, MenuItem, MenuItems} from '@headlessui/react'
 import {Bars3Icon, XMarkIcon} from '@heroicons/react/24/outline'
@@ -8,13 +8,7 @@ import {clearAuth, useLogoutMutation} from "../features/authentication/authentic
 import {useAppDispatch, useAppSelector} from "../app/hooks";
 import Authentication from "../components/authentication";
 import {USER_IMAGE_URL} from "../app/consts";
-
-const navigation = [
-    {name: 'Home', href: '/', current: true},
-    {name: 'Team', href: '#', current: false},
-    {name: 'Projects', href: '#', current: false},
-    {name: 'Calendar', href: '#', current: false},
-]
+import logo from "../logo.svg";
 
 function classNames(...classes) {
     return classes.filter(Boolean).join(' ')
@@ -26,13 +20,27 @@ export default function Layout() {
     const [open, setOpen] = useState(false);
     const [showRegister, setShowRegister] = useState(false);
 
+    const [navigation, setNavigation] = useState([
+        {name: 'Home', href: '/', current: false},
+        {name: 'Team', href: '#', current: false},
+        {name: 'Projects', href: '#', current: false},
+        {name: 'Calendar', href: '#', current: false},
+    ]);
+
+    const location = useLocation();
+
     useEffect(() => {
+        setNavigation(navigation.map((item) => {
+            item.current = window.location.pathname === item.href;
+            return item;
+        }));
+
         const titles = {
             '/': 'Home',
+            '/profile': 'Profile',
         };
-
         document.title = titles[window.location.pathname] ? titles[window.location.pathname] + " | Bookstore" : 'Bookstore';
-    }, []);
+    }, [location]);
 
     const dispatch = useAppDispatch();
     const user = useAppSelector((state) => state.auth.user);
@@ -65,20 +73,20 @@ export default function Layout() {
                                 <div className="flex flex-shrink-0 items-center">
                                     <img
                                         alt="Your Company"
-                                        src="https://tailwindui.com/img/logos/mark.svg?color=indigo&shade=600"
+                                        src={logo}
                                         className="block h-8 w-auto lg:hidden"
                                     />
                                     <img
                                         alt="Your Company"
-                                        src="https://tailwindui.com/img/logos/mark.svg?color=indigo&shade=600"
+                                        src={logo}
                                         className="hidden h-8 w-auto lg:block"
                                     />
                                 </div>
                                 <div className="hidden sm:-my-px sm:ml-6 sm:flex sm:space-x-8">
                                     {navigation.map((item) => (
-                                        <a
+                                        <Link
                                             key={item.name}
-                                            href={item.href}
+                                            to={item.href}
                                             aria-current={item.current ? 'page' : undefined}
                                             className={classNames(
                                                 item.current
@@ -88,7 +96,7 @@ export default function Layout() {
                                             )}
                                         >
                                             {item.name}
-                                        </a>
+                                        </Link>
                                     ))}
                                 </div>
                             </div>
@@ -131,10 +139,10 @@ export default function Layout() {
                                                     <MenuItem key={item.name}>
                                                         {
                                                             item.onClick == null ?
-                                                                (<a href={item.href}
+                                                                (<Link to={item.href}
                                                                     className="block px-4 py-2 text-sm text-gray-700 data-[focus]:bg-gray-100">
                                                                         {item.name}
-                                                                    </a>
+                                                                    </Link>
                                                                 ) : (
                                                                     <button onClick={item.onClick}
                                                                             className="block px-4 py-2 text-start text-sm text-gray-700 data-[focus]:bg-gray-100 w-full">
@@ -169,8 +177,8 @@ export default function Layout() {
                             {navigation.map((item) => (
                                 <DisclosureButton
                                     key={item.name}
-                                    as="a"
-                                    href={item.href}
+                                    as={Link}
+                                    to={item.href}
                                     aria-current={item.current ? 'page' : undefined}
                                     className={classNames(
                                         item.current
@@ -210,8 +218,8 @@ export default function Layout() {
                                         {userNavigation.map((item) => (
                                             <DisclosureButton
                                                 key={item.name}
-                                                as="a"
-                                                href={item.href}
+                                                as={Link}
+                                                to={item.href}
                                                 className="block px-4 py-2 text-base font-medium text-gray-500 hover:bg-gray-100 hover:text-gray-800"
                                             >
                                                 {item.name}
