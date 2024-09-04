@@ -1,12 +1,16 @@
 import {useParams} from "react-router-dom";
 import {useFetchBookQuery} from "../features/books/books_slice";
 import {
+    Disclosure, DisclosureButton, DisclosurePanel,
     TabGroup,
     TabPanel,
 } from '@headlessui/react'
 import {StarIcon} from '@heroicons/react/20/solid'
-import {BOOK_IMAGE_URL} from "../app/consts";
+import {BOOK_IMAGE_URL, USER_IMAGE_URL} from "../app/consts";
 import {useEffect} from "react";
+import Rating from "../components/rating";
+import {MinusIcon, PlusIcon} from "@heroicons/react/24/solid";
+import ReadMore from "../components/readmore";
 
 function classNames(...classes) {
     return classes.filter(Boolean).join(' ')
@@ -19,7 +23,7 @@ export default function ShowBook() {
     const {data: book, isFetching} = useFetchBookQuery(bookId);
 
     useEffect(() => {
-        if(!isFetching)
+        if (!isFetching)
             document.title = book.title + " | Bookstore";
     }, [isFetching]);
 
@@ -77,17 +81,8 @@ export default function ShowBook() {
                         <div className="mt-3">
                             <h3 className="sr-only">Reviews</h3>
                             <div className="flex items-center">
-                                <div className={["flex items-center", isFetching ? 'animate-pulse' : '']}>
-                                    {[0, 1, 2, 3, 4].map((rating) => (
-                                        <StarIcon
-                                            key={rating}
-                                            aria-hidden="true"
-                                            className={classNames(
-                                                (isFetching ? 0 : book.averageRating) > rating ? 'text-indigo-500' : 'text-gray-300',
-                                                'h-5 w-5 flex-shrink-0',
-                                            )}
-                                        />
-                                    ))}
+                                <div className={isFetching ? 'animate-pulse' : ''}>
+                                    <Rating rating={isFetching ? 0 : book.averageRating} />
                                 </div>
                                 <p className="sr-only">
                                     {isFetching ? 'Loading' : book.averageRating} out of 5 stars
@@ -122,6 +117,37 @@ export default function ShowBook() {
                                 </button>
                             </div>
                         </form>
+
+                        <section aria-labelledby="details-heading" className="mt-12">
+                            {!isFetching && book && book.reviews.length > 0 && (
+                                <h2 id="details-heading" className="text-lg font-semibold text-gray-800">Reviews</h2>
+                            )}
+
+                            <div className="divide-y divide-gray-200 border-t">
+                                {!isFetching && book && book.reviews.map((review) => (
+                                    <Disclosure key={review.id} as="div">
+                                        <div className="flex my-2">
+                                            <div className="mr-4 flex-shrink-0 mt-2">
+                                                <img
+                                                    className="h-10 w-10 rounded-full border border-gray-300"
+                                                    src={USER_IMAGE_URL + review.user.picture}
+                                                    alt={review.user.firstName}
+                                                />
+                                            </div>
+                                            <div className="w-full">
+                                                <div className="flex items-center justify-between w-full">
+                                                    <h4 className="text-gray-600 font-bold">{review.user.firstName} {review.user.lastName}</h4>
+                                                    <Rating rating={review.rating}/>
+                                                </div>
+                                                <p className="mt-1">
+                                                    <ReadMore text={review.body} maxLength={100}/>
+                                                </p>
+                                            </div>
+                                        </div>
+                                    </Disclosure>
+                                ))}
+                            </div>
+                        </section>
                     </div>
                 </div>
             </div>
