@@ -32,38 +32,47 @@ function renderEmptyStates(number = 3) {
 
 function renderBooks(books) {
     return books.map(book => (
-        <Link key={book.id} to={`/books/${book.id}`}
-              className="transform transition-transform hover:scale-105 duration-200">
+        <div key={book.id}
+             className="transform transition-transform hover:scale-105 duration-200">
             <div className="overflow-hidden rounded-lg bg-white shadow">
                 <div className="px-4 py-5 sm:p-4">
                     <div className="flex flex-col justify-between space-y-4">
-                        <div className="relative h-0 pb-2/3 pt-2/3">
-                            <img
-                                alt={`${book.title}`}
-                                className="absolute inset-0 w-full h-full object-cover rounded-lg"
-                                src={BOOK_IMAGE_URL + book.cover}
-                            />
-                        </div>
-                        <div className="flex flex-col items-start">
-                            <h3 className="text-xl text-blue-700">
-                                {book.title}
-                            </h3>
-                            <div className="text-sm font-semibold">{book.author}</div>
-                            <div className="flex items-start">
-                                <span className="text-sm">$</span>
-                                <span className="text-2xl font-semibold">{Math.floor(book.priceInPennies / 100)}</span>
-                                <span className="text-sm mr-0.5">
+                        <Link to={`/books/${book.id}`}>
+                            <div className="relative h-0 pb-2/3 pt-2/3">
+                                <img
+                                    alt={`${book.title}`}
+                                    className="absolute inset-0 w-full h-full object-cover rounded-lg"
+                                    src={BOOK_IMAGE_URL + book.cover}
+                                />
+                            </div>
+                        </Link>
+                        <Link to={`/books/${book.id}`}>
+                            <div className="flex flex-col items-start">
+                                <h3 className="text-xl text-blue-700">
+                                    {book.title}
+                                </h3>
+                                <div className="text-sm font-semibold text-gray-500 mt-0.5">{book.author}</div>
+                                <div className="flex items-start text-gray-800 mt-2">
+                                    <span className="text-sm">$</span>
+                                    <span
+                                        className="text-2xl font-semibold">{Math.floor(book.priceInPennies / 100)}</span>
+                                    <span className="text-sm mr-0.5">
                                     {String(book.priceInPennies % 100).padStart(2, '0')}</span>
+                                </div>
                             </div>
+                        </Link>
 
-                            <div>
-
-                            </div>
+                        <div className="mt-2">
+                            <button>
+                                    <span className="text-sm font-semibold text-blue-700">
+                                        Add to Cart
+                                    </span>
+                            </button>
                         </div>
                     </div>
                 </div>
             </div>
-        </Link>
+        </div>
     ));
 }
 
