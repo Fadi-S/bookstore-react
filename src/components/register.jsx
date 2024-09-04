@@ -1,4 +1,3 @@
-import {Link} from "react-router-dom";
 import { Form } from "react-final-form";
 import LoadingSpinner from "./loading_spinner";
 import {CheckCircleIcon, XCircleIcon} from "@heroicons/react/24/outline";
@@ -18,7 +17,10 @@ function validate(values) {
     return errors;
 }
 
-export default function Login(props) {
+export default function Register(props) {
+
+    const errors = props.error?.data.message.errors;
+
     return (
         <div className="flex min-h-full flex-1 flex-col justify-center px-6 py-12 lg:px-8">
             <div className="sm:mx-auto sm:w-full sm:max-w-sm">
@@ -28,7 +30,7 @@ export default function Login(props) {
                     className="mx-auto h-14 w-auto"
                 />
                 <h2 className="mt-10 text-center text-2xl font-bold leading-9 tracking-tight text-gray-900">
-                    Sign in to your account
+                    Sign up for an account
                 </h2>
             </div>
 
@@ -41,7 +43,7 @@ export default function Login(props) {
                             </div>
                             <div className="ml-3">
                                 <h3 className="text-sm font-medium text-red-800">
-                                    {props.error.data.message}
+                                    {props.error.data.message instanceof String ? props.error.data.message : "There was an error with these fields"}
                                 </h3>
                             </div>
                         </div>
@@ -55,7 +57,7 @@ export default function Login(props) {
                                 <CheckCircleIcon aria-hidden="true" className="h-5 w-5 text-green-400"/>
                             </div>
                             <div className="ml-3">
-                                <h3 className="text-sm font-medium text-green-800">Login Successful</h3>
+                                <h3 className="text-sm font-medium text-green-800">Account Created Successfully</h3>
                             </div>
                         </div>
                     </div>
@@ -65,13 +67,33 @@ export default function Login(props) {
 
                     <form onSubmit={handleSubmit} className="space-y-3">
                         <MyField
+                            label="First Name"
+                            id="firstName"
+                            name="firstName"
+                            type="text"
+                            component="input"
+                            autoComplete="firstName"
+                            error={errors?.firstName}
+                        />
+
+                        <MyField
+                            label="Last Name"
+                            id="lastName"
+                            name="lastName"
+                            type="text"
+                            component="input"
+                            autoComplete="lastName"
+                            error={errors?.lastName}
+                        />
+
+                        <MyField
                             label="Email address"
                             id="email"
                             name="email"
                             type="email"
                             component="input"
-                            required
                             autoComplete="email"
+                            error={errors?.email}
                         />
 
                         <MyField
@@ -80,8 +102,8 @@ export default function Login(props) {
                             id="password"
                             name="password"
                             type="password"
-                            required
                             autoComplete="current-password"
+                            error={errors?.password}
                         />
 
                         <div>
@@ -89,23 +111,17 @@ export default function Login(props) {
                                 type="submit"
                                 className="flex w-full justify-center rounded-md bg-indigo-600 px-3 py-1.5 text-sm font-semibold leading-6 text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
                             >
-                                {props.isLoading ? <LoadingSpinner/> : "Sign in"}
+                                {props.isLoading ? <LoadingSpinner/> : "Sign up"}
                             </button>
-
-                            <div className="text-sm mt-3">
-                                <Link to="/forget" className="font-semibold text-indigo-600 hover:text-indigo-500">
-                                    Forgot password?
-                                </Link>
-                            </div>
                         </div>
                     </form>
                 )}/>
 
                 <p className="mt-10 text-center text-sm text-gray-500">
-                    Not a member?{' '}
-                    <button onClick={props.onRegister}
+                    Already a member?{' '}
+                    <button onClick={props.onLogin}
                             className="font-semibold leading-6 text-indigo-600 hover:text-indigo-500">
-                    Register
+                        Sign in
                     </button>
                 </p>
             </div>

@@ -1,27 +1,10 @@
-import {Link} from "react-router-dom";
 import {useLoginMutation, useRegisterMutation} from "../features/authentication/authentication_slice";
-import { Form, Field } from "react-final-form";
-import LoadingSpinner from "./loading_spinner";
-import {CheckCircleIcon, XCircleIcon} from "@heroicons/react/24/outline";
 import {useEffect, useState} from "react";
 
 import { setToken, setAuthorities, setUser } from "../features/authentication/authentication_slice";
 import {useAppDispatch} from "../app/hooks";
 import Login from "./login";
-
-function validate(values) {
-    const errors = {};
-
-    if (!values.email) {
-        errors.email = "Enter an email";
-    }
-
-    if (!values.password) {
-        errors.password = "Enter a password";
-    }
-
-    return errors;
-}
+import Register from "./register";
 
 export default function Authentication(props) {
 
@@ -58,17 +41,39 @@ export default function Authentication(props) {
         }
     }, [loginData, dispatch, isLoginSuccess, props]);
 
+    useEffect(() => {
+        if(isRegisterSuccess) {
+            setTimeout(() => {
+                props.onSuccess();
+            }, 750);
+
+            dispatch(setAuthorities(registerData.authorities));
+            dispatch(setToken(registerData.token));
+            dispatch(setUser(registerData.user));
+        }
+    }, [registerData, dispatch, isRegisterSuccess, props]);
+
     const [showRegister, setShowRegister] = useState(props.showRegister);
 
     if(showRegister) {
         return (
-            "Show Register form"
+            <Register
+                onLogin={() => setShowRegister(false)}
+                error={registerError}
+                isLoading={isRegisterLoading}
+                isSuccess={isRegisterSuccess}
+                onSubmit={registerUser}
+            />
         );
-    } else {
-
     }
 
     return (
-        <Login onSubmit={loginUser} />
+        <Login
+            onRegister={() => setShowRegister(true)}
+            error={loginError}
+            isLoading={isLoginLoading}
+            isSuccess={isLoginSuccess}
+            onSubmit={loginUser}
+        />
     );
 }

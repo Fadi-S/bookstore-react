@@ -1,6 +1,6 @@
 import React from "react";
 import {useFetchBooksQuery} from "../features/books/books_slice";
-import {IMAGE_URL} from "../app/consts";
+import {BOOK_IMAGE_URL} from "../app/consts";
 import {Link, useSearchParams} from "react-router-dom";
 
 
@@ -16,7 +16,7 @@ function renderEmptyStates(number = 3) {
                         <img
                             alt="Default"
                             className="absolute inset-0 w-full h-full object-cover rounded-lg"
-                            src={IMAGE_URL + "default"}
+                            src={BOOK_IMAGE_URL + "default"}
                         />
                     </div>
                     <div className="flex flex-col space-y-3">
@@ -41,7 +41,7 @@ function renderBooks(books) {
                             <img
                                 alt={`${book.title}`}
                                 className="absolute inset-0 w-full h-full object-cover rounded-lg"
-                                src={IMAGE_URL + book.cover}
+                                src={BOOK_IMAGE_URL + book.cover}
                             />
                         </div>
                         <div className="flex flex-col items-start">

@@ -4,9 +4,10 @@ import {Outlet} from "react-router-dom";
 import {Disclosure, DisclosureButton, DisclosurePanel, Menu, MenuButton, MenuItem, MenuItems} from '@headlessui/react'
 import {Bars3Icon, XMarkIcon} from '@heroicons/react/24/outline'
 import Modal from "../components/modal";
-import Login from "../components/login";
 import {clearAuth, useLogoutMutation} from "../features/authentication/authentication_slice";
 import {useAppDispatch, useAppSelector} from "../app/hooks";
+import Authentication from "../components/authentication";
+import {USER_IMAGE_URL} from "../app/consts";
 
 const navigation = [
     {name: 'Home', href: '/', current: true},
@@ -22,13 +23,14 @@ function classNames(...classes) {
 
 export default function Layout() {
 
-    const titles = {
-        '/': 'Home',
-    };
-
     const [open, setOpen] = useState(false);
+    const [showRegister, setShowRegister] = useState(false);
 
     useEffect(() => {
+        const titles = {
+            '/': 'Home',
+        };
+
         document.title = titles[window.location.pathname] ? titles[window.location.pathname] + " | Bookstore" : 'Bookstore';
     }, []);
 
@@ -54,7 +56,7 @@ export default function Layout() {
                     open={open}
                     onClose={() => setOpen(false)}
                 >
-                    <Login onSuccess={() => setOpen(false)}/>
+                    <Authentication showRegister={showRegister} onSuccess={() => setOpen(false)}/>
                 </Modal>
                 <Disclosure as="nav" className="bg-white shadow-sm">
                     <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
@@ -95,7 +97,7 @@ export default function Layout() {
                                     <div className="space-x-3">
                                         <button
                                             type="button"
-                                            onClick={() => setOpen(true)}
+                                            onClick={() => {setOpen(true); setShowRegister(false)}}
                                             className="rounded-md bg-indigo-50 px-3 py-2 text-sm font-semibold text-indigo-600 shadow-sm hover:bg-indigo-100"
                                         >
                                             Sign In
@@ -103,6 +105,7 @@ export default function Layout() {
 
                                         <button
                                             type="button"
+                                            onClick={() => {setOpen(true); setShowRegister(true)}}
                                             className="inline-flex items-center gap-x-1.5 rounded-md bg-indigo-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
                                         >
                                             Sign Up
@@ -117,7 +120,7 @@ export default function Layout() {
                                                     className="relative flex rounded-full bg-white text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2">
                                                     <span className="absolute -inset-1.5"/>
                                                     <span className="sr-only">Open user menu</span>
-                                                    <img alt="" src={user.imageUrl} className="h-8 w-8 rounded-full"/>
+                                                    <img alt="" src={USER_IMAGE_URL + user.picture} className="h-8 w-8 rounded-full"/>
                                                 </MenuButton>
                                             </div>
                                             <MenuItems
@@ -196,7 +199,7 @@ export default function Layout() {
                                 <div className="border-t border-gray-200 pb-3 pt-4">
                                     <div className="flex items-center px-4">
                                         <div className="flex-shrink-0">
-                                            <img alt="" src={user.imageUrl} className="h-10 w-10 rounded-full"/>
+                                            <img alt="" src={USER_IMAGE_URL + user.picture} className="h-10 w-10 rounded-full"/>
                                         </div>
                                         <div className="ml-3">
                                             <div className="text-base font-medium text-gray-800">{user.name}</div>
