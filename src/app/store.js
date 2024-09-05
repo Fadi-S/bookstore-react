@@ -8,6 +8,7 @@ import {cartApi} from "../features/cart/cart_slice";
 import PageReducer from "../features/page/page_slice";
 import {addressApi} from "../features/cart/address_slice";
 import {reviewsApi} from "../features/books/reviews_slice";
+import {ordersApi} from "../features/orders/orders_slice";
 
 export const store = configureStore({
     reducer: {
@@ -18,6 +19,7 @@ export const store = configureStore({
         [cartApi.reducerPath]: cartApi.reducer,
         [addressApi.reducerPath]: addressApi.reducer,
         [reviewsApi.reducerPath]: reviewsApi.reducer,
+        [ordersApi.reducerPath]: ordersApi.reducer,
         auth: AuthReducer,
         page: PageReducer,
     },
@@ -31,6 +33,7 @@ export const store = configureStore({
                 .concat(cartApi.middleware)
                 .concat(addressApi.middleware)
                 .concat(reviewsApi.middleware)
+                .concat(ordersApi.middleware)
     ,
 });
 

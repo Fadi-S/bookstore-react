@@ -9,6 +9,7 @@ import Address from "../components/address";
 import {closeNotification, showNotification} from "../features/page/page_slice";
 import {useNavigate} from "react-router-dom";
 import {useAppDispatch} from "../app/hooks";
+import {ordersApi} from "../features/orders/orders_slice";
 
 export default function Checkout() {
 
@@ -27,10 +28,14 @@ export default function Checkout() {
     useEffect(() => {
         if (isSuccess) {
             dispatch(showNotification({title: "Success", message: "Order placed successfully", type: "success", show: true}));
+
+            dispatch(ordersApi.util.resetApiState())
+
             setTimeout(() => {
                 dispatch(closeNotification());
             }, 3000);
-            navigate("/");
+
+            navigate("/orders");
         }
 
     }, [isCheckoutLoading, isSuccess]);

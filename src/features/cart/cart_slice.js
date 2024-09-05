@@ -17,7 +17,7 @@ export const cartApi = createApi({
             return headers;
         },
     }),
-    tagTypes: ['Cart'],
+    tagTypes: ['Cart', 'Orders'],
     endpoints(build) {
         return {
             fetchCart: build.query({
@@ -49,7 +49,7 @@ export const cartApi = createApi({
                     url: `cart/checkout?addressId=${addressId}`,
                     method: "POST",
                 }),
-                invalidatesTags: ['Cart'],
+                invalidatesTags: ['Cart', 'Orders'],
             }),
         };
     }

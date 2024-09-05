@@ -10,6 +10,8 @@ import EditBook from "./pages/book_edit";
 import Cart from "./pages/cart";
 import Checkout from "./pages/checkout";
 import CreateReview from "./pages/review_create";
+import MyOrders from "./pages/my_orders";
+import ManageOrders from "./pages/manage_orders";
 
 export default (
     <Route path="/" element={<Layout/>}>
@@ -22,6 +24,10 @@ export default (
 
         <Route path="/cart" element={<Cart/>}/>
         <Route path="/checkout" element={<Checkout/>}/>
+
         <Route path="/reviews/:book" element={<CreateReview/>}/>
+        <Route path="/orders" element={<MyOrders/>}/>
+
+        <Route path="/manage/orders" element={<ManageOrders/>}/>
     </Route>
 );
