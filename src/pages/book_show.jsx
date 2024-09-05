@@ -16,6 +16,7 @@ import Modal from "../components/modal";
 import {ExclamationTriangleIcon} from "@heroicons/react/24/outline";
 import {useAddToCartMutation} from "../features/cart/cart_slice";
 import {InformationCircleIcon} from "@heroicons/react/20/solid";
+import {handleAddToCart} from "../app/helpers";
 
 
 export default function ShowBook() {
@@ -26,12 +27,15 @@ export default function ShowBook() {
 
     const authorities = useAppSelector((state) => state.auth.authorities);
 
-    const [addToCart, {isLoading: isAddingToCart}] = useAddToCartMutation();
-
     const navigate = useNavigate();
+    const [addToCart, {isLoading: isAddingToCart, error: errorAddingToCart, isSuccess: addedSuccessfully}] = useAddToCartMutation();
+    useEffect(
+        () => handleAddToCart(dispatch, errorAddingToCart, addedSuccessfully, navigate),
+        [isAddingToCart]
+    );
+
     const myAddToCart = (id) => {
         addToCart({id});
-        navigate("/cart");
     };
 
     useEffect(() => {

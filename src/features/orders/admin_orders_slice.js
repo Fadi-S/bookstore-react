@@ -35,7 +35,7 @@ export const adminOrdersApi = createApi(
                 query: (id) => `orders/${id}`,
                 providesTags: ["AdminOrders"],
             }),
-            updateOrderStatus: builder.query({
+            updateOrderStatus: builder.mutation({
                 query: ({id, status}) => ({
                     url: `orders/${id}`,
                     method: "PATCH",

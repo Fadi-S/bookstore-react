@@ -1,8 +1,11 @@
-import React from "react";
+import React, {useEffect} from "react";
 import {useFetchBooksQuery} from "../features/books/books_slice";
 import {BOOK_IMAGE_URL} from "../app/consts";
 import {Link, useNavigate, useSearchParams} from "react-router-dom";
 import {useAddToCartMutation} from "../features/cart/cart_slice";
+import {useAppDispatch} from "../app/hooks";
+import {closeNotification, openLoginForm, showNotification} from "../features/page/page_slice";
+import {handleAddToCart, notify} from "../app/helpers";
 
 
 function renderEmptyStates(number = 3) {
@@ -84,12 +87,16 @@ export default function BooksIndex() {
     const {data = [], isFetching} = useFetchBooksQuery([size, page]);
 
 
-    const [addToCart, {isLoading: isAddingToCart}] = useAddToCartMutation();
-
     const navigate = useNavigate();
+    const dispatch = useAppDispatch();
+    const [addToCart, {isLoading: isAddingToCart, error: errorAddingToCart, isSuccess: addedSuccessfully}] = useAddToCartMutation();
+    useEffect(
+        () => handleAddToCart(dispatch, errorAddingToCart, addedSuccessfully, navigate),
+        [isAddingToCart]
+    );
+
     const myAddToCart = (id) => {
         addToCart({id});
-        navigate("/cart");
     };
 
     if (isFetching || data == null) {

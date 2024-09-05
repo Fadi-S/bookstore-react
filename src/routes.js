@@ -13,9 +13,10 @@ import CreateReview from "./pages/review_create";
 import MyOrders from "./pages/my_orders";
 import ManageOrders from "./pages/manage_orders";
 import ManageOrder from "./pages/manage_order";
+import ErrorBoundary from "./pages/error";
 
 export default (
-    <Route path="/" element={<Layout/>}>
+    <Route path="/" errorElement={<ErrorBoundary />} element={<Layout/>}>
         <Route index element={<BooksIndex/>}/>
         <Route path="/books/create" element={<CreateBook/>}/>
         <Route path="/books/:book" element={<ShowBook/>}/>
@@ -30,6 +31,6 @@ export default (
         <Route path="/orders" element={<MyOrders/>}/>
 
         <Route path="/manage/orders" element={<ManageOrders/>}/>
-        <Route path="/manage/orders/:book" element={<ManageOrder/>}/>
+        <Route path="/manage/orders/:order" element={<ManageOrder/>}/>
     </Route>
 );

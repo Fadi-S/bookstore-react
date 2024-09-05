@@ -36,6 +36,8 @@ export default function Authentication(props) {
         if(isLoginSuccess) {
             setTimeout(() => {
                 props.onSuccess();
+
+                window.location.reload();
             }, 750);
 
             dispatch(setAuthorities(loginData.authorities));
@@ -48,6 +50,8 @@ export default function Authentication(props) {
         if(isRegisterSuccess) {
             setTimeout(() => {
                 props.onSuccess();
+
+                window.location.reload();
             }, 750);
 
             dispatch(setAuthorities(registerData.authorities));

@@ -3,6 +3,7 @@ import {Link, useSearchParams} from "react-router-dom";
 import {useConvertPrice, useParseDate} from "../app/helpers";
 import Pagination from "../components/pagination";
 import If from "../components/if";
+import {USER_IMAGE_URL} from "../app/consts";
 
 function classNames(...classes) {
     return classes.filter(Boolean).join(' ')
@@ -65,6 +66,12 @@ export default function ManageOrders() {
                                             className="sticky top-0 z-10 border-b border-gray-300 bg-white bg-opacity-75 px-3 py-3.5 text-left text-sm font-semibold text-gray-900 backdrop-blur backdrop-filter"
                                         >
                                             Created At
+                                        </th>
+                                        <th
+                                            scope="col"
+                                            className="sticky top-0 z-10 border-b border-gray-300 bg-white bg-opacity-75 px-3 py-3.5 text-left text-sm font-semibold text-gray-900 backdrop-blur backdrop-filter"
+                                        >
+                                            Ordered By
                                         </th>
                                         <th
                                             scope="col"
@@ -154,6 +161,19 @@ export default function ManageOrders() {
                                                 )}
                                             >
                                                 {toReadableDate(order.createdAt)}
+                                            </td>
+                                            <td
+                                                className={classNames(
+                                                    orderIdx !== orders.elements.length - 1 ? 'border-b border-gray-200' : '',
+                                                    'hidden whitespace-nowrap px-3 py-4 text-xs text-gray-900 lg:table-cell',
+                                                )}
+                                            >
+                                                <div className="flex space-x-1 items-center">
+                                                    <img className="w-8 h-8 rounded-full hover:rounded-sm hover:scale-[2] transform transition-transform duration-150 object-cover"
+                                                         src={USER_IMAGE_URL + order.user.picture}
+                                                         alt={order.user.firstName}/>
+                                                    <span>{order.user.firstName} {order.user.lastName}</span>
+                                                </div>
                                             </td>
                                             <td
                                                 className={classNames(

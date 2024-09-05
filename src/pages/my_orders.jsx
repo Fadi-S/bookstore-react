@@ -1,15 +1,14 @@
 import {useFetchOrdersQuery} from "../features/orders/orders_slice";
 import {CheckCircleIcon, ClockIcon, TruckIcon, XCircleIcon} from "@heroicons/react/24/outline";
-import {Link} from "react-router-dom";
-import {useConvertPrice, useParseDate} from "../app/helpers";
+import {Link, useNavigate} from "react-router-dom";
+import {handleAddToCart, useConvertPrice, useParseDate} from "../app/helpers";
 import {BOOK_IMAGE_URL} from "../app/consts";
 import ReadMore from "../components/readmore";
-import {useEffect} from "react";
+import React, {useEffect} from "react";
 import {useAddToCartMutation} from "../features/cart/cart_slice";
 import {useAppDispatch} from "../app/hooks";
-import {closeNotification, showNotification} from "../features/page/page_slice";
 
-function renderStatus(status) {
+export function renderStatus(status) {
     if(status === "Delivered") {
         return (
             <>
@@ -55,21 +54,17 @@ function renderStatus(status) {
 
 export default function MyOrders() {
     const {data: orders, isLoading} = useFetchOrdersQuery();
-    const [addToCart, {isSuccess: isAddSuccess}] = useAddToCartMutation();
 
     const toReadablePrice = useConvertPrice;
     const parseDate = useParseDate;
 
     const dispatch = useAppDispatch();
-    useEffect(() => {
-        if (isAddSuccess) {
-            dispatch(showNotification({title: "Success", message: "Book added to cart", type: "success", show: true}));
-
-            setTimeout(() => {
-                dispatch(closeNotification());
-            });
-        }
-    }, [isAddSuccess]);
+    const navigate = useNavigate();
+    const [addToCart, {isLoading: isAddingToCart, error: errorAddingToCart, isSuccess: addedSuccessfully}] = useAddToCartMutation();
+    useEffect(
+        () => handleAddToCart(dispatch, errorAddingToCart, addedSuccessfully, navigate),
+        [isAddingToCart]
+    );
 
     if (isLoading) {
         return <div>Loading...</div>;
@@ -127,13 +122,14 @@ export default function MyOrders() {
                                         {order.books.map((book) => (
                                             <li key={book.id} className="p-4 sm:p-6">
                                                 <div className="flex items-center sm:items-start">
-                                                    <div
-                                                        className="h-20 w-20 flex-shrink-0 overflow-hidden rounded-lg bg-gray-200 sm:h-40 sm:w-40">
-                                                        <img
-                                                            src={BOOK_IMAGE_URL + book.cover}
-                                                            alt={book.title}
-                                                            className="h-full w-full object-cover object-center"
-                                                        />
+                                                    <div className="w-32">
+                                                        <div className="relative h-0 pb-2/3 pt-2/3">
+                                                            <img
+                                                                alt={`${book.title}`}
+                                                                className="absolute inset-0 w-full h-full object-cover rounded-lg"
+                                                                src={BOOK_IMAGE_URL + book.cover}
+                                                            />
+                                                        </div>
                                                     </div>
                                                     <div className="ml-6 flex-1 text-sm">
                                                         <div

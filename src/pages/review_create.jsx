@@ -8,6 +8,7 @@ import React, {useEffect} from "react";
 import {StarIcon} from "@heroicons/react/20/solid";
 import {closeNotification, showNotification} from "../features/page/page_slice";
 import {useAppDispatch} from "../app/hooks";
+import {notify} from "../app/helpers";
 
 export default function CreateReview() {
 
@@ -21,16 +22,17 @@ export default function CreateReview() {
 
     useEffect(() => {
         if (isSuccess) {
-            dispatch(showNotification({title: "Success", message: 'Review created successfully', type: 'success', show: true}));
-            setTimeout(() => {
-                dispatch(closeNotification());
-            }, 3000);
+            notify("Review created successfully", dispatch);
 
-            dispatch(booksApi.util.resetApiState())
+            dispatch(booksApi.util.resetApiState());
 
             navigate(`/books/${bookId}`);
         }
     }, [isSuccess]);
+
+    if(book && ! book.purchased) {
+        navigate(`/books/${bookId}`);
+    }
 
     return (
         <div className="bg-white relative">
