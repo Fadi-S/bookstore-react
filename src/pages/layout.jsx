@@ -63,6 +63,7 @@ export default function Layout() {
             '/books/create': 'Add Book',
             '/orders': 'My Orders',
             '/cart': 'Cart',
+            '/checkout': 'Checkout',
         };
         document.title = titles[window.location.pathname] ? titles[window.location.pathname] + " | Bookstore" : 'Bookstore';
     }, [location]);

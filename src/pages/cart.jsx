@@ -5,6 +5,7 @@ import { useRemoveFromCartMutation, useFetchCartQuery, useAddToCartMutation } fr
 import { useConvertPrice } from "../app/helpers";
 import {closeNotification, showNotification} from "../features/page/page_slice";
 import {useAppDispatch} from "../app/hooks";
+import {Link} from "react-router-dom";
 
 export default function Cart() {
     const [removeFromCart] = useRemoveFromCartMutation();
@@ -139,13 +140,13 @@ export default function Cart() {
                             </div>
                         </dl>
 
-                        <div className="mt-6">
-                            <button
-                                type="submit"
-                                className="w-full rounded-md border border-transparent bg-indigo-600 px-4 py-3 text-base font-medium text-white shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 focus:ring-offset-gray-50"
+                        <div className="mt-6 flex items-center">
+                            <Link
+                                to="/checkout"
+                                className="w-full text-center rounded-md border border-transparent bg-indigo-600 px-4 py-3 text-base font-medium text-white shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 focus:ring-offset-gray-50"
                             >
                                 Checkout
-                            </button>
+                            </Link>
                         </div>
                     </section>
                 </form>

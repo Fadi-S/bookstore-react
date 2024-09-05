@@ -6,6 +6,7 @@ import { setupListeners } from "@reduxjs/toolkit/query";
 import {adminBooksApi} from "../features/books/admin_book_slice";
 import {cartApi} from "../features/cart/cart_slice";
 import PageReducer from "../features/page/page_slice";
+import {addressApi} from "../features/cart/address_slice";
 
 export const store = configureStore({
     reducer: {
@@ -14,6 +15,7 @@ export const store = configureStore({
         [authenticationApi.reducerPath]: authenticationApi.reducer,
         [profileApi.reducerPath]: profileApi.reducer,
         [cartApi.reducerPath]: cartApi.reducer,
+        [addressApi.reducerPath]: addressApi.reducer,
         auth: AuthReducer,
         page: PageReducer,
     },
@@ -24,7 +26,8 @@ export const store = configureStore({
                 .concat(authenticationApi.middleware)
                 .concat(profileApi.middleware)
                 .concat(adminBooksApi.middleware)
-                .concat(cartApi.middleware),
+                .concat(cartApi.middleware)
+                .concat(addressApi.middleware),
 });
 
 setupListeners(store.dispatch);
