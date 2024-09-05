@@ -3,5 +3,6 @@ export function useConvertPrice(priceInPennies) {
 }
 
 export function useParseDate(date) {
-    return new Date(Date.parse(date)).toLocaleDateString();
+    date = new Date(Date.parse(date));
+    return date.toLocaleDateString() + " " + date.toLocaleTimeString();
 }

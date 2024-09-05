@@ -12,6 +12,7 @@ import Checkout from "./pages/checkout";
 import CreateReview from "./pages/review_create";
 import MyOrders from "./pages/my_orders";
 import ManageOrders from "./pages/manage_orders";
+import ManageOrder from "./pages/manage_order";
 
 export default (
     <Route path="/" element={<Layout/>}>
@@ -29,5 +30,6 @@ export default (
         <Route path="/orders" element={<MyOrders/>}/>
 
         <Route path="/manage/orders" element={<ManageOrders/>}/>
+        <Route path="/manage/orders/:book" element={<ManageOrder/>}/>
     </Route>
 );

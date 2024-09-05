@@ -24,6 +24,10 @@ export const cartApi = createApi({
                 query: () => `cart`,
                 providesTags: ['Cart'],
             }),
+            fetchCartItemsCount: build.query({
+                query: () => `cart/count`,
+                providesTags: ['Cart'],
+            }),
             addToCart: build.mutation({
                 query: ({id, quantity}) => {
                     let url = `cart/${id}/add`;
@@ -55,4 +59,4 @@ export const cartApi = createApi({
     }
 });
 
-export const { useFetchCartQuery, useAddToCartMutation, useRemoveFromCartMutation, useCheckoutMutation } = cartApi;
+export const { useFetchCartQuery, useAddToCartMutation, useRemoveFromCartMutation, useCheckoutMutation, useFetchCartItemsCountQuery } = cartApi;

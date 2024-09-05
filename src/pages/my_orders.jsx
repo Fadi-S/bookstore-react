@@ -1,5 +1,5 @@
 import {useFetchOrdersQuery} from "../features/orders/orders_slice";
-import {CheckCircleIcon, ClockIcon, TruckIcon} from "@heroicons/react/24/outline";
+import {CheckCircleIcon, ClockIcon, TruckIcon, XCircleIcon} from "@heroicons/react/24/outline";
 import {Link} from "react-router-dom";
 import {useConvertPrice, useParseDate} from "../app/helpers";
 import {BOOK_IMAGE_URL} from "../app/consts";
@@ -35,6 +35,17 @@ function renderStatus(status) {
             <>
                 <TruckIcon className="h-5 w-5 text-blue-400" aria-hidden="true"/>
                 <p className="ml-2 text-sm font-medium text-blue-500">
+                    {status}
+                </p>
+            </>
+        );
+    }
+
+    if (status === "Canceled") {
+        return (
+            <>
+                <XCircleIcon className="h-5 w-5 text-red-400" aria-hidden="true"/>
+                <p className="ml-2 text-sm font-medium text-red-500">
                     {status}
                 </p>
             </>

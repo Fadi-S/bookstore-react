@@ -10,7 +10,7 @@ import Authentication from "../components/authentication";
 import {USER_IMAGE_URL} from "../app/consts";
 import logo from "../logo.svg";
 import {ShoppingCartIcon} from "@heroicons/react/24/solid";
-import {useFetchCartQuery} from "../features/cart/cart_slice";
+import {useFetchCartItemsCountQuery} from "../features/cart/cart_slice";
 import { openRegisterForm, openLoginForm, closeAuthForm } from "../features/page/page_slice";
 import Notification from "../components/notification";
 
@@ -31,7 +31,7 @@ export default function Layout() {
 
     const initialized = useRef(false)
 
-    const { data: cart, isFetching: isCartLoading} = useFetchCartQuery();
+    const { data: itemsCount, isFetching: isCartLoading} = useFetchCartItemsCountQuery();
 
     useEffect(() => {
         if (!initialized.current) {
@@ -155,8 +155,8 @@ export default function Layout() {
                                         >
                                             <span className="sr-only">View notifications</span>
                                             <ShoppingCartIcon aria-hidden="true" className="h-6 w-6" />
-                                            {!isCartLoading && cart.items.length > 0 && <span
-                                                className="absolute -top-2 -right-2 bg-red-500 text-white rounded-full px-1.5 py-0.5 text-xs">{cart.items.length}</span>}
+                                            {!isCartLoading && itemsCount > 0 && <span
+                                                className="absolute -top-2 -right-2 bg-red-500 text-white rounded-full px-1.5 py-0.5 text-xs">{itemsCount}</span>}
                                         </Link>
 
                                             <Menu as="div" className="relative ml-3">
@@ -271,8 +271,8 @@ export default function Layout() {
                                         >
                                             <span className="sr-only">View notifications</span>
                                             <ShoppingCartIcon aria-hidden="true" className="h-6 w-6"/>
-                                            {!isCartLoading && cart.items.length > 0 && <span
-                                                className="absolute -top-2 -right-2 bg-red-500 text-white rounded-full px-1.5 py-0.5 text-xs">{cart.items.length}</span>}
+                                            {!isCartLoading && itemsCount > 0 && <span
+                                                className="absolute -top-2 -right-2 bg-red-500 text-white rounded-full px-1.5 py-0.5 text-xs">{itemsCount}</span>}
                                         </Link>
                                     </div>
                                     <div className="mt-3 space-y-1">
