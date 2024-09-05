@@ -7,6 +7,7 @@ import {adminBooksApi} from "../features/books/admin_book_slice";
 import {cartApi} from "../features/cart/cart_slice";
 import PageReducer from "../features/page/page_slice";
 import {addressApi} from "../features/cart/address_slice";
+import {reviewsApi} from "../features/books/reviews_slice";
 
 export const store = configureStore({
     reducer: {
@@ -16,6 +17,7 @@ export const store = configureStore({
         [profileApi.reducerPath]: profileApi.reducer,
         [cartApi.reducerPath]: cartApi.reducer,
         [addressApi.reducerPath]: addressApi.reducer,
+        [reviewsApi.reducerPath]: reviewsApi.reducer,
         auth: AuthReducer,
         page: PageReducer,
     },
@@ -27,7 +29,9 @@ export const store = configureStore({
                 .concat(profileApi.middleware)
                 .concat(adminBooksApi.middleware)
                 .concat(cartApi.middleware)
-                .concat(addressApi.middleware),
+                .concat(addressApi.middleware)
+                .concat(reviewsApi.middleware)
+    ,
 });
 
 setupListeners(store.dispatch);

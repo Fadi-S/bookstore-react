@@ -61,11 +61,16 @@ function renderBooks(books, addToCart) {
                     </Link>
 
                     <div className="mt-2">
-                        <button type="button" onClick={() => addToCart(book.id)}>
+                        {book && book.isOutOfStock ? (
+                            <p className="text-red-500 font-semibold">Out of stock</p>
+                        ) : (
+                            <button type="button" onClick={() => addToCart(book.id)}>
                                 <span className="text-sm font-semibold text-blue-700">
                                     Add to Cart
                                 </span>
-                        </button>
+                            </button>
+                        )}
+
                     </div>
                 </div>
             </div>

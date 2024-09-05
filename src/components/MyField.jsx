@@ -21,6 +21,7 @@ export default function MyField(props) {
                                     autoComplete={props.autoComplete}
                                     rows={props.rows}
                                     {...input}
+                                    {...props}
                                     className={[
                                         "block w-full rounded-md border-0 py-2 shadow-sm ring-1 focus:ring-2 focus:ring-inset ring-inset sm:text-sm sm:leading-6",
                                         meta.error && meta.touched ? 'text-red-900 ring-red-300 placeholder:text-red-300 focus:ring-red-500' : 'text-gray-900 ring-gray-300 placeholder:text-gray-400 focus:ring-indigo-600'
@@ -35,6 +36,7 @@ export default function MyField(props) {
                                 type={props.type}
                                 required={props.required}
                                 autoComplete={props.autoComplete}
+                                {...props}
                                 {...input}
                                 className={[
                                     "block w-full rounded-md border-0 py-2 shadow-sm ring-1 focus:ring-2 focus:ring-inset ring-inset sm:text-sm sm:leading-6",

@@ -155,7 +155,7 @@ export default function Layout() {
                                         >
                                             <span className="sr-only">View notifications</span>
                                             <ShoppingCartIcon aria-hidden="true" className="h-6 w-6" />
-                                            {!isCartLoading && <span
+                                            {!isCartLoading && cart.items.length > 0 && <span
                                                 className="absolute -top-2 -right-2 bg-red-500 text-white rounded-full px-1.5 py-0.5 text-xs">{cart.items.length}</span>}
                                         </Link>
 
@@ -271,7 +271,7 @@ export default function Layout() {
                                         >
                                             <span className="sr-only">View notifications</span>
                                             <ShoppingCartIcon aria-hidden="true" className="h-6 w-6"/>
-                                            {!isCartLoading && <span
+                                            {!isCartLoading && cart.items.length > 0 && <span
                                                 className="absolute -top-2 -right-2 bg-red-500 text-white rounded-full px-1.5 py-0.5 text-xs">{cart.items.length}</span>}
                                         </Link>
                                     </div>

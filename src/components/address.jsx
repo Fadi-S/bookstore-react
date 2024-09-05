@@ -1,15 +1,20 @@
 import {useCreateAddressMutation} from "../features/cart/address_slice";
 import {useEffect} from "react";
-import {showNotification} from "../features/page/page_slice";
+import {closeNotification, showNotification} from "../features/page/page_slice";
 import {Field, Form} from "react-final-form";
 import MyField from "./MyField";
+import {useAppDispatch} from "../app/hooks";
 
 export default function Address(props) {
     const [createAddress, {error, isLoading, isSuccess}] = useCreateAddressMutation();
 
+    const dispatch = useAppDispatch();
     useEffect(() => {
         if (isSuccess) {
-            showNotification({title: "Success", message: "Address created successfully", type: "success", show: true});
+            dispatch(showNotification({title: "Success", message: "Address created successfully", type: "success", show: true}));
+            setTimeout(() => {
+                dispatch(closeNotification());
+            }, 3000);
 
             props.onClose();
         }

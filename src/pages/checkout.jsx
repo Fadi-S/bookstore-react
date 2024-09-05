@@ -6,8 +6,9 @@ import {Radio, RadioGroup} from "@headlessui/react";
 import {useEffect, useState} from "react";
 import Modal from "../components/modal";
 import Address from "../components/address";
-import {showNotification} from "../features/page/page_slice";
+import {closeNotification, showNotification} from "../features/page/page_slice";
 import {useNavigate} from "react-router-dom";
+import {useAppDispatch} from "../app/hooks";
 
 export default function Checkout() {
 
@@ -22,9 +23,13 @@ export default function Checkout() {
 
     const navigate = useNavigate();
 
+    const dispatch = useAppDispatch();
     useEffect(() => {
         if (isSuccess) {
-            showNotification({title: "Success", message: "Order placed successfully", type: "success", show: true});
+            dispatch(showNotification({title: "Success", message: "Order placed successfully", type: "success", show: true}));
+            setTimeout(() => {
+                dispatch(closeNotification());
+            }, 3000);
             navigate("/");
         }
 
@@ -158,7 +163,10 @@ export default function Checkout() {
                                 type="button"
                                 disabled={selectedAddress === null}
                                 onClick={() => checkout(selectedAddress?.id)}
-                                className="w-full rounded-md border border-transparent bg-indigo-600 px-4 py-3 text-base font-medium text-white shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 focus:ring-offset-gray-50"
+                                className="w-full rounded-md border border-transparent bg-indigo-600
+                                 px-4 py-3 text-base font-medium text-white shadow-sm hover:bg-indigo-700
+                                  focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2
+                                   focus:ring-offset-gray-50 disabled:bg-gray-300 disabled:text-gray-800 transition-colors duration-200"
                             >
                                 {isCheckoutLoading ? "Placing Order..." : "Confirm order"}
                             </button>

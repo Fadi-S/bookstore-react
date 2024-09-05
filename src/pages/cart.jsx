@@ -36,28 +36,32 @@ export default function Cart() {
             <div className="mx-auto max-w-2xl px-4 pb-24 pt-16 sm:px-6 lg:max-w-7xl lg:px-8">
                 <h1 className="text-3xl font-bold tracking-tight text-gray-900 sm:text-4xl">Shopping Cart</h1>
                 <form className="mt-12 lg:grid lg:grid-cols-12 lg:items-start lg:gap-x-12 xl:gap-x-16">
-                    <section aria-labelledby="cart-heading" className="lg:col-span-7">
+                    <section aria-labelledby="cart-heading" className={(cart.items.length > 0 ? "lg:col-span-7" : "lg:col-span-12")}>
                         <h2 id="cart-heading" className="sr-only">
                             Items in your shopping cart
                         </h2>
 
                         {cart.items.length === 0 && (
-                            <Link
-                                to="/"
-                                className="relative block w-full rounded-lg border-2 border-dashed border-gray-300 p-12 text-center hover:border-gray-400 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
-                            >
-                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
-                                     stroke-width="1.5" stroke="currentColor" className="mx-auto h-12 w-12 text-gray-400">
-                                    <path stroke-linecap="round" stroke-linejoin="round"
-                                          d="M2.25 3h1.386c.51 0 .955.343 1.087.835l.383 1.437M7.5 14.25a3 3 0 0 0-3 3h15.75m-12.75-3h11.218c1.121-2.3 2.1-4.684 2.924-7.138a60.114 60.114 0 0 0-16.536-1.84M7.5 14.25 5.106 5.272M6 20.25a.75.75 0 1 1-1.5 0 .75.75 0 0 1 1.5 0Zm12.75 0a.75.75 0 1 1-1.5 0 .75.75 0 0 1 1.5 0Z"/>
-                                </svg>
+                            <div className="max-w-3xl mx-auto">
+                                <Link
+                                    to="/"
+                                    className="relative block w-full rounded-lg border-2 border-dashed border-gray-300 p-12 text-center hover:border-gray-400 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
+                                >
+                                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
+                                         strokeWidth="1.5" stroke="currentColor" className="mx-auto h-12 w-12 text-gray-400">
+                                        <path strokeLinecap="round" strokeLinejoin="round"
+                                              d="M2.25 3h1.386c.51 0 .955.343 1.087.835l.383 1.437M7.5 14.25a3 3 0 0 0-3 3h15.75m-12.75-3h11.218c1.121-2.3 2.1-4.684 2.924-7.138a60.114 60.114 0 0 0-16.536-1.84M7.5 14.25 5.106 5.272M6 20.25a.75.75 0 1 1-1.5 0 .75.75 0 0 1 1.5 0Zm12.75 0a.75.75 0 1 1-1.5 0 .75.75 0 0 1 1.5 0Z"/>
+                                    </svg>
 
-                                <span
-                                    className="mt-2 block text-sm font-semibold text-gray-900">No books in your cart, browse to find some.</span>
-                            </Link>
+                                    <span
+                                        className="mt-2 block text-sm font-semibold text-gray-900">
+                                        Your cart is currently empty. Explore our collection and find your next great read!
+                                    </span>
+                                </Link>
+                            </div>
                         )}
 
-                        <ul role="list" className="divide-y divide-gray-200 border-b border-t border-gray-200">
+                        <ul className={cart.items.length > 0 && "divide-y divide-gray-200 border-b border-t border-gray-200"}>
                             {cart.items.map((item, itemIdx) => (
                                 <li key={item.id} className="flex py-6 sm:py-10">
                                     <div className="w-48">
@@ -125,46 +129,51 @@ export default function Cart() {
                     </section>
 
                     {/* Order summary */}
-                    <section
-                        aria-labelledby="summary-heading"
-                        className="mt-16 rounded-lg bg-gray-50 px-4 py-6 sm:p-6 lg:col-span-5 lg:mt-0 lg:p-8"
-                    >
-                        <h2 id="summary-heading" className="text-lg font-medium text-gray-900">
-                            Order summary
-                        </h2>
 
-                        <dl className="mt-6 space-y-4">
-                            <div className="flex items-center justify-between">
-                                <dt className="text-sm text-gray-600">Subtotal</dt>
-                                <dd className="text-sm font-medium text-gray-900">${toReadablePrice(cart.subTotal)}</dd>
-                            </div>
-                            <div className="flex items-center justify-between border-t border-gray-200 pt-4">
-                                <dt className="flex items-center text-sm text-gray-600">
-                                    <span>Shipping estimate</span>
-                                </dt>
-                                <dd className="text-sm font-medium text-gray-900">${toReadablePrice(cart.shipping)}</dd>
-                            </div>
-                            <div className="flex items-center justify-between border-t border-gray-200 pt-4">
-                                <dt className="flex text-sm text-gray-600">
-                                    <span>Tax (14% VAT)</span>
-                                </dt>
-                                <dd className="text-sm font-medium text-gray-900">${toReadablePrice(cart.tax)}</dd>
-                            </div>
-                            <div className="flex items-center justify-between border-t border-gray-200 pt-4">
-                                <dt className="text-base font-medium text-gray-900">Order total</dt>
-                                <dd className="text-base font-medium text-gray-900">${toReadablePrice(cart.total)}</dd>
-                            </div>
-                        </dl>
-
-                        <div className="mt-6 flex items-center">
-                            <Link
-                                to="/checkout"
-                                className="w-full text-center rounded-md border border-transparent bg-indigo-600 px-4 py-3 text-base font-medium text-white shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 focus:ring-offset-gray-50"
+                    {
+                        cart.items.length > 0 && (
+                            <section
+                                aria-labelledby="summary-heading"
+                                className="mt-16 rounded-lg bg-gray-50 px-4 py-6 sm:p-6 lg:col-span-5 lg:mt-0 lg:p-8"
                             >
-                                Checkout
-                            </Link>
-                        </div>
-                    </section>
+                                <h2 id="summary-heading" className="text-lg font-medium text-gray-900">
+                                    Order summary
+                                </h2>
+
+                                <dl className="mt-6 space-y-4">
+                                    <div className="flex items-center justify-between">
+                                        <dt className="text-sm text-gray-600">Subtotal</dt>
+                                        <dd className="text-sm font-medium text-gray-900">${toReadablePrice(cart.subTotal)}</dd>
+                                    </div>
+                                    <div className="flex items-center justify-between border-t border-gray-200 pt-4">
+                                        <dt className="flex items-center text-sm text-gray-600">
+                                            <span>Shipping estimate</span>
+                                        </dt>
+                                        <dd className="text-sm font-medium text-gray-900">${toReadablePrice(cart.shipping)}</dd>
+                                    </div>
+                                    <div className="flex items-center justify-between border-t border-gray-200 pt-4">
+                                        <dt className="flex text-sm text-gray-600">
+                                            <span>Tax (14% VAT)</span>
+                                        </dt>
+                                        <dd className="text-sm font-medium text-gray-900">${toReadablePrice(cart.tax)}</dd>
+                                    </div>
+                                    <div className="flex items-center justify-between border-t border-gray-200 pt-4">
+                                        <dt className="text-base font-medium text-gray-900">Order total</dt>
+                                        <dd className="text-base font-medium text-gray-900">${toReadablePrice(cart.total)}</dd>
+                                    </div>
+                                </dl>
+
+                                <div className="mt-6 flex items-center">
+                                    <Link
+                                        to="/checkout"
+                                        className="w-full text-center rounded-md border border-transparent bg-indigo-600 px-4 py-3 text-base font-medium text-white shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 focus:ring-offset-gray-50"
+                                    >
+                                        Checkout
+                                    </Link>
+                                </div>
+                            </section>
+                        )
+                    }
                 </form>
             </div>
         </div>

@@ -9,6 +9,7 @@ import CreateBook from "./pages/book_create";
 import EditBook from "./pages/book_edit";
 import Cart from "./pages/cart";
 import Checkout from "./pages/checkout";
+import CreateReview from "./pages/review_create";
 
 export default (
     <Route path="/" element={<Layout/>}>
@@ -21,5 +22,6 @@ export default (
 
         <Route path="/cart" element={<Cart/>}/>
         <Route path="/checkout" element={<Checkout/>}/>
+        <Route path="/reviews/:book" element={<CreateReview/>}/>
     </Route>
 );
