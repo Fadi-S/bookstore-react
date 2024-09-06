@@ -17,10 +17,12 @@ export const booksApi = createApi({
         },
     }),
     tagTypes: ['Books'],
-    endpoints(build) {
+    endpoints: function (build) {
         return {
             fetchBooks: build.query({
-                query: ({size=8, page}) => `books?size=${size}&page=${page}`,
+                query: ({size = 8, page, sort}) => {
+                    return `books?size=${size}&page=${page}&sort=${sort}`;
+                },
                 providesTags: ['Books'],
             }),
             fetchBook: build.query({
