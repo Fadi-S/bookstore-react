@@ -1,4 +1,4 @@
-import React, {useEffect} from "react";
+import React, {useCallback, useEffect, useState} from "react";
 import {useFetchBooksQuery} from "../features/books/books_slice";
 import {BOOK_IMAGE_URL} from "../app/consts";
 import {Link, useNavigate, useSearchParams} from "react-router-dom";
@@ -67,10 +67,11 @@ function renderBooks(books, addToCart) {
                         {book && book.isOutOfStock ? (
                             <p className="text-red-500 font-semibold">Out of stock</p>
                         ) : (
-                            <button type="button" onClick={() => addToCart(book.id)}>
-                                <span className="text-sm font-semibold text-blue-700">
-                                    Add to Cart
-                                </span>
+                            <button
+                                type="button" onClick={() => addToCart(book.id)}
+                                className="rounded-md bg-indigo-50 px-3 py-2 text-sm font-semibold text-indigo-600 shadow-sm hover:bg-indigo-100"
+                            >
+                                Add to Cart
                             </button>
                         )}
 
@@ -82,9 +83,28 @@ function renderBooks(books, addToCart) {
 }
 
 export default function BooksIndex() {
-    const [searchParams] = useSearchParams();
-    let [size, page] = [parseInt(searchParams.get("size")), parseInt(searchParams.get("page"))];
-    const {data = [], isFetching} = useFetchBooksQuery([size, page]);
+    const [page, setPage] = useState(1);
+    const [allBooks, setAllBooks] = useState([]);
+    const {data = [], isFetching} = useFetchBooksQuery({size: 12, page: page});
+
+    const handleScroll = useCallback(() => {
+        const { scrollTop, scrollHeight, clientHeight } = document.documentElement;
+
+        if (scrollTop + clientHeight >= scrollHeight - 150 && !isFetching && page < data.totalPages) {
+            setPage((prevPage) => prevPage + 1);
+        }
+    }, [isFetching]);
+
+    useEffect(() => {
+        if (data?.elements?.length) {
+            setAllBooks((prevBooks) => [...prevBooks, ...data.elements]);
+        }
+    }, [data]);
+
+    useEffect(() => {
+        window.addEventListener('scroll', handleScroll);
+        return () => window.removeEventListener('scroll', handleScroll); // Clean up when component unmounts
+    }, [handleScroll]);
 
 
     const navigate = useNavigate();
@@ -95,22 +115,24 @@ export default function BooksIndex() {
         [isAddingToCart]
     );
 
-    const myAddToCart = (id) => {
-        addToCart({id});
-    };
+    const myAddToCart = (id) => addToCart({id});
 
-    if (isFetching || data == null) {
-        size = !size ? 4 : Math.min(size, 12);
+    if (isFetching && allBooks == null) {
         return (
-            <div className="grid gap-4 grid-cols-2 sm:grid-cols-4 lg:grid-cols-6">
-                {renderEmptyStates(size)}
+            <div className="grid gap-4 grid-cols-2 sm:grid-cols-3 lg:grid-cols-4">
+                {renderEmptyStates(6)}
             </div>
         );
     }
 
     return (
-        <div className="grid gap-4 grid-cols-2 sm:grid-cols-4 lg:grid-cols-6">
-            {renderBooks(data, myAddToCart)}
+        <div className="grid gap-4 grid-cols-2 sm:grid-cols-3 lg:grid-cols-4">
+            {renderBooks(allBooks, myAddToCart)}
+            {isFetching && (
+                <div className="flex justify-center w-full">
+                    <div className="w-6 h-6 border-2 border-t-2 border-indigo-500 rounded-full animate-spin"></div>
+                </div>
+            )}
         </div>
     );
 }

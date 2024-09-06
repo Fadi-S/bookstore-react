@@ -20,7 +20,7 @@ export const booksApi = createApi({
     endpoints(build) {
         return {
             fetchBooks: build.query({
-                query: ([size, page]=[2, 1]) => `books?size=${size}&page=${page}`,
+                query: ({size=8, page}) => `books?size=${size}&page=${page}`,
                 providesTags: ['Books'],
             }),
             fetchBook: build.query({
