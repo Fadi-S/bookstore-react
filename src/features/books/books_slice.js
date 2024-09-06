@@ -21,7 +21,13 @@ export const booksApi = createApi({
         return {
             fetchBooks: build.query({
                 query: ({size = 8, page, sort}) => {
-                    return `books?size=${size}&page=${page}&sort=${sort}`;
+                    let url = `books`;
+                    let params = new URLSearchParams();
+                    if (size) params.set('size', size);
+                    if (page) params.set('page', page);
+                    if (sort) params.set('sort', sort);
+
+                    return url + '?' + params.toString();
                 },
                 providesTags: ['Books'],
             }),
