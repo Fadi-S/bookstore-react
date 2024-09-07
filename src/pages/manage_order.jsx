@@ -126,7 +126,7 @@ export default function ManageOrder() {
 
                     {/* Products */}
                     <h4 className="sr-only">Items</h4>
-                    <ul role="list" className="divide-y divide-gray-200">
+                    <ul className="divide-y divide-gray-200">
                         {order.books.map((book) => (
                             <li key={book.id} className="p-4 sm:p-6">
                                 <div className="flex items-center sm:items-start">

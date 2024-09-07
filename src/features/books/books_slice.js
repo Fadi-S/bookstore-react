@@ -32,7 +32,9 @@ export const booksApi = createApi({
                             newParams.set(key, "[]" + value);
                         }
                     }
-                    if (params.search) newParams.set('filters[title]', "~" + params.search);
+                    if (params.search) {
+                        newParams.set('search', params.search);
+                    }
 
                     return url + '?' + newParams.toString();
                 },

@@ -63,7 +63,7 @@ export default function MyOrders() {
     const [addToCart, {isLoading: isAddingToCart, error: errorAddingToCart, isSuccess: addedSuccessfully}] = useAddToCartMutation();
     useEffect(
         () => handleAddToCart(dispatch, errorAddingToCart, addedSuccessfully, navigate),
-        [isAddingToCart]
+        [addedSuccessfully, dispatch, errorAddingToCart, isAddingToCart, navigate]
     );
 
     if (isLoading) {
@@ -118,7 +118,7 @@ export default function MyOrders() {
 
                                     {/* Products */}
                                     <h4 className="sr-only">Items</h4>
-                                    <ul role="list" className="divide-y divide-gray-200">
+                                    <ul className="divide-y divide-gray-200">
                                         {order.books.map((book) => (
                                             <li key={book.id} className="p-4 sm:p-6">
                                                 <div className="flex items-center sm:items-start">

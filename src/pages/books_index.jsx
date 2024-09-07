@@ -138,11 +138,13 @@ export default function BooksIndex() {
         const debounceTimer = setTimeout(() =>{
             const url = window.location.pathname;
             const params = new URLSearchParams(window.location.search);
-            const changed = params.get('search') !== search;
+            const changed = (params.get('search') || "") !== search;
+
             if(search)
                 params.set('search', search);
             else
                 params.delete('search');
+
             navigate(`${url}?${params.toString()}`);
 
             if(changed)
@@ -162,14 +164,6 @@ export default function BooksIndex() {
         if (!data.authors || !data.genres) return;
 
         let tempFilters = [
-            {
-                id: 'filters[category]',
-                name: 'Category',
-                options: [
-                    {value: 'new-arrivals', label: 'All New Arrivals', checked: false},
-                    {value: 'tees', label: 'Tees', checked: false},
-                ],
-            },
             {
                 id: 'filters[author]',
                 name: 'Author',
