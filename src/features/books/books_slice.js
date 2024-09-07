@@ -20,14 +20,20 @@ export const booksApi = createApi({
     endpoints: function (build) {
         return {
             fetchBooks: build.query({
-                query: ({size = 8, page, sort}) => {
+                query: ({size = '8', page, params}) => {
                     let url = `books`;
-                    let params = new URLSearchParams();
-                    if (size) params.set('size', size);
-                    if (page) params.set('page', page);
-                    if (sort) params.set('sort', sort);
+                    let newParams = new URLSearchParams();
+                    if (size) newParams.set('size', size);
+                    if (page) newParams.set('page', page);
+                    if (params.sort) newParams.set('sort', params.sort);
+                    for (let key in params) {
+                        let value = params[key];
+                        if (key.startsWith("filters[") && value != null && value !== "") {
+                            newParams.set(key, "[]" + value);
+                        }
+                    }
 
-                    return url + '?' + params.toString();
+                    return url + '?' + newParams.toString();
                 },
                 providesTags: ['Books'],
             }),

@@ -1,13 +1,14 @@
 import React, {useCallback, useEffect, useMemo, useRef, useState} from "react";
 import {useFetchBooksQuery} from "../features/books/books_slice";
 import {BOOK_IMAGE_URL} from "../app/consts";
-import {Link, useNavigate, useParams} from "react-router-dom";
+import {Link, useNavigate} from "react-router-dom";
 import {useAddToCartMutation} from "../features/cart/cart_slice";
 import {useAppDispatch} from "../app/hooks";
 import {handleAddToCart} from "../app/helpers";
 import {
     Dialog,
-    DialogBackdrop, DialogPanel,
+    DialogBackdrop,
+    DialogPanel,
     Disclosure,
     DisclosureButton,
     DisclosurePanel,
@@ -21,6 +22,9 @@ import {
     PopoverPanel,
 } from '@headlessui/react'
 import {ChevronDownIcon, XMarkIcon} from '@heroicons/react/20/solid'
+import {ShoppingCartIcon} from "@heroicons/react/24/solid";
+import If from "../components/if";
+import {MagnifyingGlassIcon} from "@heroicons/react/24/outline";
 
 
 function renderEmptyStates(number = 3) {
@@ -50,6 +54,23 @@ function renderEmptyStates(number = 3) {
 }
 
 function renderBooks(books, addToCart) {
+
+    if(books.length === 0) {
+        return (
+            <div className="col-span-12 mt-8">
+                <div className="overflow-hidden rounded-lg bg-white shadow max-w-2xl mx-auto">
+                    <div className="px-4 py-5 sm:p-4 h-full">
+                        <div className="text-center">
+                            <MagnifyingGlassIcon className="mx-auto h-12 w-12 text-gray-400"/>
+                            <h3 className="mt-2 text-sm font-semibold text-gray-900">No Books found</h3>
+                            <p className="mt-1 text-sm text-gray-500">Try changing your search criteria</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        );
+    }
+
     return books.map(book => (
         <div key={`book-${book.id}`} className="overflow-hidden rounded-lg bg-white shadow">
             <div className="px-4 py-5 sm:p-4 h-full">
@@ -68,6 +89,7 @@ function renderBooks(books, addToCart) {
                                 {book.title}
                             </h3>
                             <div className="text-sm font-semibold text-gray-500 mt-0.5">{book.author}</div>
+                            <div className="text-sm font-semibold text-gray-500 mt-0.5">{book.genre}</div>
                             <div className="flex items-start text-gray-800 mt-2">
                                 <span className="text-sm">$</span>
                                 <span
@@ -83,10 +105,12 @@ function renderBooks(books, addToCart) {
                             <p className="text-red-500 font-semibold">Out of stock</p>
                         ) : (
                             <button
-                                type="button" onClick={() => addToCart(book.id)}
-                                className="rounded-md bg-indigo-50 px-3 py-2 text-sm font-semibold text-indigo-600 shadow-sm hover:bg-indigo-100"
+                                type="button"
+                                onClick={() => addToCart(book.id)}
+                                className="inline-flex text-center justify-center items-center gap-x-1.5 rounded-md bg-indigo-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
                             >
-                                Add to Cart
+                                <ShoppingCartIcon aria-hidden="true" className="-ml-0.5 h-5 w-5"/>
+                                <span>Add to Cart</span>
                             </button>
                         )}
 
@@ -104,37 +128,84 @@ function classNames(...classes) {
 export default function BooksIndex() {
     const [page, setPage] = useState(1);
     const [allBooks, setAllBooks] = useState([]);
-    const params = new URLSearchParams(window.location.search);
+    const searchParams = new URLSearchParams(window.location.search);
+    const params = Object.fromEntries(searchParams.entries());
+    const sort = searchParams.get('sort');
+    const size = searchParams.get('size') || 12;
 
-    const sort = params.get('sort');
-    const activeFilters = [{value: 'objects', label: 'Objects'}];
+    const {data = [], isFetching} = useFetchBooksQuery({size, page, params});
 
-    const {data = [], isFetching} = useFetchBooksQuery({size: 12, page: page, sort: params.get('sort')});
+    const [filters, setFilters] = useState([]);
+    useEffect(() => {
+        if (!data.authors || !data.genres) return;
+
+        let tempFilters = [
+            {
+                id: 'filters[category]',
+                name: 'Category',
+                options: [
+                    {value: 'new-arrivals', label: 'All New Arrivals', checked: false},
+                    {value: 'tees', label: 'Tees', checked: false},
+                ],
+            },
+            {
+                id: 'filters[author]',
+                name: 'Author',
+                options: data.authors.map(author => ({value: author, label: author, checked: false}))
+            },
+            {
+                id: 'filters[genre]',
+                name: 'Genre',
+                options: data.genres.map(genre => ({value: genre, label: genre, checked: false}))
+            }
+        ];
+
+        const params = new URLSearchParams(window.location.search);
+        tempFilters.map(section => {
+            section.options.forEach(
+                option => option.checked = !!params.get(section.id)?.split(',').includes(option.value)
+            );
+        });
+
+        setFilters(tempFilters);
+    }, [data.authors, data.genres]);
+
+
+    const activeFilters = useMemo(() => {
+        if (!filters || !filters.length) return [];
+
+        return filters.map((section) =>
+            section.options.filter(option => option.checked).map((option) => ({
+                value: option.value,
+                label: option.label,
+                section: section.id,
+            }))
+        ).flat();
+    }, [filters]);
+    //useState([{value: 'objects', label: 'Objects'}]);
 
     const lastMerged = useRef(0);
     // Function to reset pagination when filters change
     const resetPagination = useCallback(() => {
-        setPage(1); // Reset page to 1
-        setAllBooks([]); // Clear existing books
-        lastMerged.current = 0; // Reset merged reference
+        setPage(1);
+        setAllBooks([]);
+        lastMerged.current = 0;
     }, []);
 
     // Handle filters change (watch the URL params for changes)
-    useEffect(() => {
-        resetPagination();
-    }, [sort, resetPagination])
+    useEffect(resetPagination, [sort, resetPagination])
 
     const handleScroll = useCallback(() => {
         const {scrollTop, scrollHeight, clientHeight} = document.documentElement;
 
-        if (scrollTop + clientHeight >= scrollHeight - 150 && !isFetching && page < data.totalPages) {
+        if (scrollTop + clientHeight >= scrollHeight - 150 && !isFetching && page < data.books.totalPages) {
             setPage((prevPage) => prevPage + 1);
         }
     }, [isFetching]);
 
     useEffect(() => {
-        if (data?.elements?.length && lastMerged.current !== page) {
-            setAllBooks((prevBooks) => [...prevBooks, ...data.elements]);
+        if (data?.books?.elements?.length && lastMerged.current !== page) {
+            setAllBooks((prevBooks) => [...prevBooks, ...data.books.elements]);
             lastMerged.current = page;
         }
     }, [data]);
@@ -144,8 +215,39 @@ export default function BooksIndex() {
         return () => window.removeEventListener('scroll', handleScroll); // Clean up when component unmounts
     }, [handleScroll]);
 
-
     const navigate = useNavigate();
+    const handleFilters = ({name, value, checked}) => {
+        const filter = filters.find(section => section.id === name);
+        const option = filter.options.find(option => option.value === value);
+
+        option.checked = checked;
+        setFilters([...filters]);
+
+        const filterParams = {};
+        filters.forEach((section) => {
+            let value = section.options.filter(option => option.checked).map(option => option.value).join(',');
+
+            if (value)
+                filterParams[section.id] = value;
+            }
+        );
+
+        const url = window.location.pathname;
+        const params = new URLSearchParams(filterParams);
+
+        const existingParams = new URLSearchParams(window.location.search);
+        for (let key of existingParams.keys()) {
+            if (key.startsWith('filters[')) {
+                continue;
+            }
+            params.set(key, existingParams.get(key));
+        }
+
+        navigate(`${url}?${params.toString()}`);
+
+        resetPagination();
+    }
+
     const dispatch = useAppDispatch();
     const [addToCart, {
         isLoading: isAddingToCart,
@@ -160,43 +262,24 @@ export default function BooksIndex() {
     const myAddToCart = (id) => addToCart({id});
 
     const url = window.location.pathname;
-    const buildPageUrl = (key, value) => `${url}?${new URLSearchParams({ [key]: value }).toString()}`;
+    const buildPageUrl =
+        (key, value) => {
+            const existingParams = new URLSearchParams(window.location.search);
+            existingParams.delete(key);
 
-    const sortOptions = [
+            return `${url}?${new URLSearchParams([...existingParams, [key, value]]).toString()}`;
+        };
+
+    const sortOptions = useMemo(() => [
         {name: 'Newest', href: buildPageUrl('sort', '-id'), current: sort === '-id'},
         {name: 'Cheapest', href: buildPageUrl('sort', 'price_in_pennies'), current: sort === 'price_in_pennies'},
-        {name: 'Most Expensive', href: buildPageUrl('sort', '-price_in_pennies'), current: sort === '-price_in_pennies'},
+        {
+            name: 'Most Expensive',
+            href: buildPageUrl('sort', '-price_in_pennies'),
+            current: sort === '-price_in_pennies'
+        },
         {name: 'Most Popular', href: buildPageUrl('sort', '-popularity'), current: sort === '-popularity'},
-    ]
-    const filters = [
-        {
-            id: 'category',
-            name: 'Category',
-            options: [
-                {value: 'new-arrivals', label: 'All New Arrivals', checked: false},
-                {value: 'tees', label: 'Tees', checked: false},
-                {value: 'objects', label: 'Objects', checked: true},
-            ],
-        },
-        {
-            id: 'color',
-            name: 'Color',
-            options: [
-                {value: 'white', label: 'White', checked: false},
-                {value: 'beige', label: 'Beige', checked: false},
-                {value: 'blue', label: 'Blue', checked: false},
-            ],
-        },
-        {
-            id: 'sizes',
-            name: 'Sizes',
-            options: [
-                {value: 's', label: 'S', checked: false},
-                {value: 'm', label: 'M', checked: false},
-                {value: 'l', label: 'L', checked: false},
-            ],
-        },
-    ]
+    ], [sort, filters, resetPagination]);
 
     const [open, setOpen] = useState(false)
 
@@ -239,18 +322,19 @@ export default function BooksIndex() {
                             {/* Filters */}
                             <form className="mt-4">
                                 {filters.map((section) => (
-                                    <Disclosure key={section.name} as="div"
+
+                                    <Disclosure key={`mobile-${section.name}`} as="div"
                                                 className="border-t border-gray-200 px-4 py-6">
                                         <h3 className="-mx-2 -my-3 flow-root">
                                             <DisclosureButton
                                                 className="group flex w-full items-center justify-between bg-white px-2 py-3 text-sm text-gray-400">
                                                 <span className="font-medium text-gray-900">{section.name}</span>
                                                 <span className="ml-6 flex items-center">
-                        <ChevronDownIcon
-                            aria-hidden="true"
-                            className="h-5 w-5 rotate-0 transform group-data-[open]:-rotate-180"
-                        />
-                      </span>
+                                                    <ChevronDownIcon
+                                                        aria-hidden="true"
+                                                        className="h-5 w-5 rotate-0 transform group-data-[open]:-rotate-180"
+                                                    />
+                                                </span>
                                             </DisclosureButton>
                                         </h3>
                                         <DisclosurePanel className="pt-6">
@@ -258,10 +342,11 @@ export default function BooksIndex() {
                                                 {section.options.map((option, optionIdx) => (
                                                     <div key={option.value} className="flex items-center">
                                                         <input
+                                                            onChange={(event) => handleFilters(event.target)}
                                                             defaultValue={option.value}
                                                             defaultChecked={option.checked}
                                                             id={`filter-mobile-${section.id}-${optionIdx}`}
-                                                            name={`${section.id}[]`}
+                                                            name={`${section.id}`}
                                                             type="checkbox"
                                                             className="h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500"
                                                         />
@@ -293,8 +378,9 @@ export default function BooksIndex() {
                             <Menu as="div" className="relative inline-block text-left">
                                 <div>
                                     <MenuButton
-                                        className="group inline-flex justify-center text-sm font-medium text-gray-700 hover:text-gray-900">
-                                        Sort
+                                        className="group inline-flex items-center justify-center text-sm font-medium text-gray-700 hover:text-gray-900">
+                                        Sort <span
+                                        className="ml-0.5 text-xs">{' '}{sortOptions.find((option) => option.current)?.name}</span>
                                         <ChevronDownIcon
                                             aria-hidden="true"
                                             className="-mr-1 ml-1 h-5 w-5 flex-shrink-0 text-gray-400 group-hover:text-gray-500"
@@ -335,18 +421,18 @@ export default function BooksIndex() {
                             <div className="hidden sm:block">
                                 <div className="flow-root">
                                     <PopoverGroup className="-mx-4 flex items-center divide-x divide-gray-200">
-                                        {filters.map((section, sectionIdx) => (
-                                            <Popover key={section.name}
+                                        {filters.map((section) => (
+                                            <Popover key={`desk-${section.id}`}
                                                      className="relative inline-block px-4 text-left">
                                                 <PopoverButton
                                                     className="group inline-flex justify-center text-sm font-medium text-gray-700 hover:text-gray-900">
                                                     <span>{section.name}</span>
-                                                    {sectionIdx === 0 ? (
+                                                    {section.options.filter(option => option.checked).length > 0 && (
                                                         <span
                                                             className="ml-1.5 rounded bg-gray-200 px-1.5 py-0.5 text-xs font-semibold tabular-nums text-gray-700">
-                            1
-                          </span>
-                                                    ) : null}
+                                                            {section.options.filter(option => option.checked).length}
+                                                          </span>
+                                                    )}
                                                     <ChevronDownIcon
                                                         aria-hidden="true"
                                                         className="-mr-1 ml-1 h-5 w-5 flex-shrink-0 text-gray-400 group-hover:text-gray-500"
@@ -361,10 +447,11 @@ export default function BooksIndex() {
                                                         {section.options.map((option, optionIdx) => (
                                                             <div key={option.value} className="flex items-center">
                                                                 <input
+                                                                    onChange={(event) => handleFilters(event.target)}
                                                                     defaultValue={option.value}
                                                                     defaultChecked={option.checked}
                                                                     id={`filter-${section.id}-${optionIdx}`}
-                                                                    name={`${section.id}[]`}
+                                                                    name={`${section.id}`}
                                                                     type="checkbox"
                                                                     className="h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500"
                                                                 />
@@ -387,51 +474,55 @@ export default function BooksIndex() {
                     </div>
 
                     {/* Active filters */}
-                    <div className="bg-gray-100">
-                        <div className="mx-auto max-w-7xl px-4 py-3 sm:flex sm:items-center sm:px-6 lg:px-8">
-                            <h3 className="text-sm font-medium text-gray-500">
-                                Filters
-                                <span className="sr-only">, active</span>
-                            </h3>
+                    <If replacement={(<div className="my-4"></div>)} condition={activeFilters.length > 0}>
+                        <div className="bg-gray-100">
+                            <div className="mx-auto max-w-7xl px-4 py-3 sm:flex sm:items-center sm:px-6 lg:px-8">
+                                <h3 className="text-sm font-medium text-gray-500">
+                                    Filters
+                                    <span className="sr-only">, active</span>
+                                </h3>
 
-                            <div aria-hidden="true" className="hidden h-5 w-px bg-gray-300 sm:ml-4 sm:block"/>
+                                <div aria-hidden="true" className="hidden h-5 w-px bg-gray-300 sm:ml-4 sm:block"/>
 
-                            <div className="mt-2 sm:ml-4 sm:mt-0">
-                                <div className="-m-1 flex flex-wrap items-center">
-                                    {activeFilters.map((activeFilter) => (
-                                        <span
-                                            key={activeFilter.value}
-                                            className="m-1 inline-flex items-center rounded-full border border-gray-200 bg-white py-1.5 pl-3 pr-2 text-sm font-medium text-gray-900"
-                                        >
-                    <span>{activeFilter.label}</span>
-                    <button
-                        type="button"
-                        className="ml-1 inline-flex h-4 w-4 flex-shrink-0 rounded-full p-1 text-gray-400 hover:bg-gray-200 hover:text-gray-500"
-                    >
-                      <span className="sr-only">Remove filter for {activeFilter.label}</span>
-                      <svg fill="none" stroke="currentColor" viewBox="0 0 8 8" className="h-2 w-2">
-                        <path d="M1 1l6 6m0-6L1 7" strokeWidth="1.5" strokeLinecap="round"/>
-                      </svg>
-                    </button>
-                  </span>
-                                    ))}
+                                <div className="mt-2 sm:ml-4 sm:mt-0">
+                                    <div className="-m-1 flex flex-wrap items-center">
+                                        {activeFilters.map((activeFilter) => (
+                                            <span
+                                                key={activeFilter.value}
+                                                className="m-1 inline-flex items-center rounded-full border border-gray-200 bg-white py-1.5 pl-3 pr-2 text-sm font-medium text-gray-900"
+                                            >
+                                            <span>{activeFilter.label}</span>
+                                            <button
+                                                type="button"
+                                                onClick={() => handleFilters({name: activeFilter.section, value: activeFilter.label, checked: false})}
+                                                className="ml-1 inline-flex h-4 w-4 flex-shrink-0 rounded-full p-1 text-gray-400 hover:bg-gray-200 hover:text-gray-500"
+                                            >
+                                              <span className="sr-only">Remove filter for {activeFilter.label}</span>
+                                              <svg fill="none" stroke="currentColor" viewBox="0 0 8 8"
+                                                   className="h-2 w-2">
+                                                <path d="M1 1l6 6m0-6L1 7" strokeWidth="1.5" strokeLinecap="round"/>
+                                              </svg>
+                                            </button>
+                                          </span>
+                                        ))}
+                                    </div>
                                 </div>
                             </div>
                         </div>
-                    </div>
+                    </If>
                 </section>
-        </div>
-    <div className="grid gap-4 grid-cols-2 sm:grid-cols-3 lg:grid-cols-4">
-        {renderBooks(allBooks, myAddToCart)}
-        {isFetching && (
-            <div className="flex justify-center w-full">
-                <div
-                    className="w-6 h-6 border-2 border-t-2 border-indigo-500 rounded-full animate-spin"></div>
             </div>
-        )}
-    </div>
-</div>
+            <div className="grid gap-4 grid-cols-2 sm:grid-cols-3 lg:grid-cols-4">
+                {renderBooks(allBooks, myAddToCart)}
+                {isFetching && (
+                    <div className="flex justify-center w-full">
+                        <div
+                            className="w-6 h-6 border-2 border-t-2 border-indigo-500 rounded-full animate-spin"></div>
+                    </div>
+                )}
+            </div>
+        </div>
 
-)
-    ;
+    )
+        ;
 }

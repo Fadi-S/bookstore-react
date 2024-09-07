@@ -1,6 +1,6 @@
-export default function If({condition, children}) {
+export default function If({condition, children, replacement}) {
     if (condition) {
         return children;
     }
-    return null;
+    return replacement;
 }
