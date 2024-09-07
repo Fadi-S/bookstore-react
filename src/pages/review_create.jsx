@@ -6,19 +6,22 @@ import {useNavigate, useParams} from "react-router-dom";
 import {BOOK_IMAGE_URL} from "../app/consts";
 import React, {useEffect} from "react";
 import {StarIcon} from "@heroicons/react/20/solid";
-import {closeNotification, showNotification} from "../features/page/page_slice";
 import {useAppDispatch} from "../app/hooks";
 import {notify} from "../app/helpers";
 
 export default function CreateReview() {
 
-    const [createReview, {isSuccess, isLoading, error}] = useCreateReviewMutation();
+    const [createReview, {isSuccess, error}] = useCreateReviewMutation();
 
     const { book: bookId } = useParams();
     const {data: book} = useFetchBookQuery(bookId);
 
+    const [ratingPreview, setRatingPreview] = React.useState(0);
+
     const navigate = useNavigate();
     const dispatch = useAppDispatch();
+
+    const errors = error?.data?.message?.errors;
 
     useEffect(() => {
         if (isSuccess) {
@@ -87,19 +90,21 @@ export default function CreateReview() {
                                     </Field>
 
                                     <h4 className="text-lg font-semibold text-gray-800">Rating</h4>
-                                    <div className="flex items-center mt-3">
+                                    {errors?.rating && <p className="text-red-500 my-1">{errors.rating}</p>}
+                                    <div className="flex items-center mt-3" onMouseLeave={() => setRatingPreview(0)}>
                                         {[0, 1, 2, 3, 4].map((rating) => (
                                             <button
                                                 key={'rating-' + rating}
                                                     type="button"
                                                 className="group"
                                                 onClick={() => form.mutators.setRating('rating', rating+1)}
+                                                onMouseEnter={() => setRatingPreview(rating+1)}
                                             >
                                                 <span className="sr-only">Rating {rating}</span>
 
                                                 <StarIcon
                                                     aria-hidden="true"
-                                                    className={ (form.getFieldState('rating')?.value > rating ? 'text-indigo-500' : 'text-gray-300') + ' h-8 w-8 flex-shrink-0'}
+                                                    className={ ((ratingPreview === 0 ? form.getFieldState('rating')?.value : ratingPreview) > rating ? 'text-indigo-500' : 'text-gray-300') + ' h-8 w-8 flex-shrink-0'}
                                                 />
                                             </button>
                                         ))}
@@ -114,6 +119,7 @@ export default function CreateReview() {
                                     placeholder="Did you like the book? Would you recommend it?"
                                     component="textarea"
                                     rows={6}
+                                    error={errors?.body}
                                 />
                             </div>
 

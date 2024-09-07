@@ -132,6 +132,28 @@ export default function BooksIndex() {
     const params = Object.fromEntries(searchParams.entries());
     const sort = searchParams.get('sort');
     const size = searchParams.get('size') || 12;
+    const [search, setSearch] = useState(searchParams.get('search') || "");
+
+    useEffect(() => {
+        const debounceTimer = setTimeout(() =>{
+            const url = window.location.pathname;
+            const params = new URLSearchParams(window.location.search);
+            const changed = params.get('search') !== search;
+            if(search)
+                params.set('search', search);
+            else
+                params.delete('search');
+            navigate(`${url}?${params.toString()}`);
+
+            if(changed)
+                resetPagination();
+        }, 500);
+
+        return () => {
+            clearTimeout(debounceTimer);
+        };
+    }, [search]);
+
 
     const {data = [], isFetching} = useFetchBooksQuery({size, page, params});
 
@@ -169,6 +191,8 @@ export default function BooksIndex() {
 
         setFilters(tempFilters);
     }, [data.authors, data.genres]);
+
+
 
 
     const activeFilters = useMemo(() => {
@@ -380,7 +404,7 @@ export default function BooksIndex() {
                                     <MenuButton
                                         className="group inline-flex items-center justify-center text-sm font-medium text-gray-700 hover:text-gray-900">
                                         Sort <span
-                                        className="ml-0.5 text-xs">{' '}{sortOptions.find((option) => option.current)?.name}</span>
+                                        className="ml-0.5 text-xs hidden sm:block">{' '}{sortOptions.find((option) => option.current)?.name}</span>
                                         <ChevronDownIcon
                                             aria-hidden="true"
                                             className="-mr-1 ml-1 h-5 w-5 flex-shrink-0 text-gray-400 group-hover:text-gray-500"
@@ -409,6 +433,16 @@ export default function BooksIndex() {
                                     </div>
                                 </MenuItems>
                             </Menu>
+
+                            <div>
+                                <input
+                                    type="search"
+                                    placeholder="Search"
+                                    className="block w-full max-w-xs sm:max-w-md border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                                    value={search}
+                                    onInput={(event) => setSearch(event.target.value)}
+                                />
+                            </div>
 
                             <button
                                 type="button"
