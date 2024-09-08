@@ -23,7 +23,7 @@ export function handleAddToCart(dispatch, error, addedSuccessfully, navigate) {
             return;
         }
 
-        notify(error.data.message, dispatch, "Error", "error");
+        notify(error?.data?.message, dispatch, "Error", "error");
     }
 
     if(addedSuccessfully) {

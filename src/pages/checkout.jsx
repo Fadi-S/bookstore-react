@@ -13,6 +13,7 @@ import {ordersApi} from "../features/orders/orders_slice";
 import If from "../components/if";
 import StripeSetup from "../components/stripe_setup";
 import {notify} from "../app/helpers";
+import {CreditCardIcon, MapPinIcon} from "@heroicons/react/24/solid";
 
 export default function Checkout() {
 
@@ -20,7 +21,7 @@ export default function Checkout() {
     const {data: paymentMethods, isLoading: isPaymentMethodsLoading, refetch: refetchPayments} = useFetchPaymentMethodsQuery();
     const {data: cart, isLoading: isLoadingCart} = useFetchCartQuery();
 
-    const [checkout, {isLoading: isCheckoutLoading, isSuccess}] = useCheckoutMutation();
+    const [checkout, {isLoading: isCheckoutLoading, isSuccess, error: checkoutError}] = useCheckoutMutation();
 
     const toReadablePrice = useConvertPrice;
 
@@ -39,9 +40,22 @@ export default function Checkout() {
             dispatch(ordersApi.util.resetApiState());
 
             navigate("/orders");
+        } else if(checkoutError) {
+            notify(checkoutError.data?.message, dispatch, "Error", "error");
+
+            dispatch(ordersApi.util.resetApiState());
+
+            navigate("/orders");
         }
 
     }, [isCheckoutLoading, isSuccess]);
+
+    useEffect(() => {
+        if(paymentMethods && paymentMethods.default) {
+            setSelectedPaymentMethod(paymentMethods.default);
+        }
+
+    }, [isPaymentMethodsLoading]);
 
     const cardAdded = (paymentMethod) => {
         notify("Card added successfully", dispatch);
@@ -66,7 +80,7 @@ export default function Checkout() {
                         <h2 className="text-lg font-medium text-gray-900">Choose Shipping Address</h2>
 
                         <Modal open={openAddress} onClose={() => setOpenAddress(false)}>
-                            <Address onClose={() => setOpenAddress(false)} />
+                            <Address onClose={() => setOpenAddress(false)}/>
                         </Modal>
 
                         <fieldset className="mt-3" aria-label="Address">
@@ -99,12 +113,17 @@ export default function Checkout() {
                             </RadioGroup>
                         </fieldset>
 
-                        <button type="button" onClick={() => setOpenAddress(true)} className="mt-3 rounded-md bg-indigo-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600">
-                            Add new address
+                        <button
+                            type="button"
+                            onClick={() => setOpenAddress(true)}
+                            className="mt-3 inline-flex items-center gap-x-1.5 rounded-md bg-indigo-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
+                        >
+                            <MapPinIcon aria-hidden="true" className="-ml-0.5 h-5 w-5"/>
+                            Add new card
                         </button>
                     </div>
 
-                    <hr className="mt-6 border-gray-400" />
+                    <hr className="mt-6 border-gray-400"/>
 
                     <div className="mt-6">
                         <h2 className="text-lg font-medium text-gray-900">Choose Payment Method</h2>
@@ -133,7 +152,12 @@ export default function Checkout() {
                                     >
                                         <span className="flex items-center">
                                           <span className="flex flex-col text-sm">
-                                            <span className="font-medium text-gray-900">•••• {pm.last4}</span>
+                                            <span className="font-medium text-gray-900 flex items-start">
+                                                <span>•••• {pm.last4}</span>
+                                                {paymentMethods.default === pm.id && (
+                                                    <span className="text-xs text-indigo-700 ml-1">(Default)</span>
+                                                )}
+                                            </span>
                                             <span className="text-gray-500">
                                               <span className="block sm:inline">
 
@@ -166,8 +190,11 @@ export default function Checkout() {
                         <div className="mb-4">
                             <If condition={!showAddCard}>
                                 <button
+                                    type="button"
                                     onClick={() => setShowAddCard(true)}
-                                    className="mt-3 rounded-md bg-indigo-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600">
+                                    className="mt-3 inline-flex items-center gap-x-1.5 rounded-md bg-indigo-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
+                                >
+                                    <CreditCardIcon aria-hidden="true" className="-ml-0.5 h-5 w-5"/>
                                     Add new card
                                 </button>
                             </If>
