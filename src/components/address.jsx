@@ -78,10 +78,12 @@ export default function Address(props) {
                                    autoComplete="country-name"
                                    className="block w-full rounded-md border-0 py-2 shadow-sm ring-1 focus:ring-2 focus:ring-inset ring-inset sm:text-sm sm:leading-6 text-gray-900 ring-gray-300 placeholder:text-gray-400 focus:ring-indigo-600">
 
+                                <option value="">-- Choose Country --</option>
                                 <option value="EG">Egypt</option>
                                 <option value="US">United States</option>
                                 <option value="CA">Canada</option>
                             </Field>
+                            {errors?.country && <p className="mt-2 text-sm text-red-600" id="country-error">{errors.country}</p>}
                         </div>
                     </div>
 

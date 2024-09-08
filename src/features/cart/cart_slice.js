@@ -49,8 +49,8 @@ export const cartApi = createApi({
                 invalidatesTags: ['Cart'],
             }),
             checkout: build.mutation({
-                query: (addressId) => ({
-                    url: `cart/checkout?addressId=${addressId}`,
+                query: ({address, paymentMethod}) => ({
+                    url: `cart/checkout?addressId=${address}&paymentMethod=${paymentMethod}`,
                     method: "POST",
                 }),
                 invalidatesTags: ['Cart', 'Orders'],

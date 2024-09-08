@@ -10,6 +10,7 @@ import {addressApi} from "../features/cart/address_slice";
 import {reviewsApi} from "../features/books/reviews_slice";
 import {ordersApi} from "../features/orders/orders_slice";
 import {adminOrdersApi} from "../features/orders/admin_orders_slice";
+import {stripeApi} from "../features/orders/stripe_slice";
 
 export const store = configureStore({
     reducer: {
@@ -22,6 +23,7 @@ export const store = configureStore({
         [reviewsApi.reducerPath]: reviewsApi.reducer,
         [ordersApi.reducerPath]: ordersApi.reducer,
         [adminOrdersApi.reducerPath]: adminOrdersApi.reducer,
+        [stripeApi.reducerPath]: stripeApi.reducer,
         auth: AuthReducer,
         page: PageReducer,
     },
@@ -37,6 +39,7 @@ export const store = configureStore({
                 .concat(reviewsApi.middleware)
                 .concat(ordersApi.middleware)
                 .concat(adminOrdersApi.middleware)
+                .concat(stripeApi.middleware)
     ,
 });
 
