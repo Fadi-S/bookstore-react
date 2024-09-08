@@ -134,11 +134,12 @@ export default function BooksIndex() {
     const size = searchParams.get('size') || 12;
     const [search, setSearch] = useState(searchParams.get('search') || "");
 
+    const isFirstRender = useRef(true);
+
     useEffect(() => {
         const debounceTimer = setTimeout(() =>{
             const url = window.location.pathname;
             const params = new URLSearchParams(window.location.search);
-            const changed = (params.get('search') || "") !== search;
 
             if(search)
                 params.set('search', search);
@@ -147,8 +148,10 @@ export default function BooksIndex() {
 
             navigate(`${url}?${params.toString()}`);
 
-            if(changed)
+            if(!isFirstRender.current) {
                 resetPagination();
+            }
+            isFirstRender.current = false;
         }, 500);
 
         return () => {
@@ -219,7 +222,7 @@ export default function BooksIndex() {
         if (scrollTop + clientHeight >= scrollHeight - 150 && !isFetching && page < data.books.totalPages) {
             setPage((prevPage) => prevPage + 1);
         }
-    }, [isFetching]);
+    }, [isFetching, page, lastMerged, data]);
 
     useEffect(() => {
         if (data?.books?.elements?.length && lastMerged.current !== page) {
