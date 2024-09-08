@@ -1,70 +1,42 @@
-# Getting Started with Create React App
+# Bookstore CMS based on React Redux (Frontend)
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+[Backend Bookstore CMS API (based on spring)](https://github.com/Fadi-S/bookstore-spring.git)
 
-## Available Scripts
+## Download and Installation
 
-In the project directory, you can run:
+To begin using this project, follow the following steps:
 
-### `npm start`
+1. Clone the repository using the following command:
+```bash
+git clone https://github.com/Fadi-S/bookstore-react.git bookstore-frontend
+```
+2. Change to the project directory:
+```bash
+cd bookstore-frontend
+```
+3. Install the project dependencies:
+```bash
+npm install
+```
+4. Start the development server:
+```bash
+npm start
+```
+5. Open your browser and navigate to [http://localhost:3000](http://localhost:3000) to view the application.
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
 
-The page will reload when you make changes.\
-You may also see any lint errors in the console.
+## Features
+### For users
+1. Search, filter, and sort the list of books easily.
+2. Add books to cart if you have an account.
+3. View the details of a book.
+4. Review a purchased book and view other users reviews.
+5. View your profile and update your information.
+6. Manage your cart and checkout (With Stripe integration).
+7. View your orders
 
-### `npm test`
-
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
-
-### `npm run build`
-
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
-
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
-
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
-
-### `npm run eject`
-
-**Note: this is a one-way operation. Once you `eject`, you can't go back!**
-
-If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
-
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
-
-You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
-
-## Learn More
-
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
-
-To learn React, check out the [React documentation](https://reactjs.org/).
-
-### Code Splitting
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
-
-### Analyzing the Bundle Size
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
-
-### Making a Progressive Web App
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
-
-### Advanced Configuration
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
-
-### Deployment
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
-
-### `npm run build` fails to minify
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+### For Admins
+1. Add, update, and delete books.
+2. View the list of orders and their details.
+3. Update the status of an order.
+4. Update quantities of books in stock.
