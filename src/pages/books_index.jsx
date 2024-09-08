@@ -391,9 +391,9 @@ export default function BooksIndex() {
                         Filters
                     </h2>
 
-                    <div className="border-b border-gray-200 bg-white py-4">
+                    <div className="border-b border-gray-200 bg-white">
                         <div className="mx-auto flex max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8">
-                            <Menu as="div" className="relative inline-block text-left">
+                            <Menu as="div" className="relative inline-block text-left my-4">
                                 <div>
                                     <MenuButton
                                         className="group inline-flex items-center justify-center text-sm font-medium text-gray-700 hover:text-gray-900">
@@ -428,11 +428,11 @@ export default function BooksIndex() {
                                 </MenuItems>
                             </Menu>
 
-                            <div>
+                            <div className="w-full h-full py-0 my-0 mx-4">
                                 <input
                                     type="search"
                                     placeholder="Search"
-                                    className="block w-full max-w-xs sm:max-w-md border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                                    className="block w-full border-0 focus:border-b focus:ring-0 focus:outline-none focus:border-gray-500 sm:text-sm"
                                     value={search}
                                     onInput={(event) => setSearch(event.target.value)}
                                 />
@@ -446,7 +446,7 @@ export default function BooksIndex() {
                                 Filters
                             </button>
 
-                            <div className="hidden sm:block">
+                            <div className="hidden sm:block my-4">
                                 <div className="flow-root">
                                     <PopoverGroup className="-mx-4 flex items-center divide-x divide-gray-200">
                                         {filters.map((section) => (
