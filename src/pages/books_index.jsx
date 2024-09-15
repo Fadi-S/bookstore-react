@@ -25,6 +25,8 @@ import {ChevronDownIcon, XMarkIcon} from '@heroicons/react/20/solid'
 import {ShoppingCartIcon} from "@heroicons/react/24/solid";
 import If from "../components/if";
 import {MagnifyingGlassIcon} from "@heroicons/react/24/outline";
+import {Carousel, CarouselItem} from "../components/carousel";
+import ReadMore from "../components/readmore";
 
 
 function renderEmptyStates(number = 3) {
@@ -55,7 +57,7 @@ function renderEmptyStates(number = 3) {
 
 function renderBooks(books, addToCart) {
 
-    if(books.length === 0) {
+    if (books.length === 0) {
         return (
             <div className="col-span-12 mt-8">
                 <div className="overflow-hidden rounded-lg bg-white shadow max-w-2xl mx-auto">
@@ -137,18 +139,18 @@ export default function BooksIndex() {
     const isFirstRender = useRef(true);
 
     useEffect(() => {
-        const debounceTimer = setTimeout(() =>{
+        const debounceTimer = setTimeout(() => {
             const url = window.location.pathname;
             const params = new URLSearchParams(window.location.search);
 
-            if(search)
+            if (search)
                 params.set('search', search);
             else
                 params.delete('search');
 
             navigate(`${url}?${params.toString()}`);
 
-            if(!isFirstRender.current) {
+            if (!isFirstRender.current) {
                 resetPagination();
             }
             isFirstRender.current = false;
@@ -188,8 +190,6 @@ export default function BooksIndex() {
 
         setFilters(tempFilters);
     }, [data.authors, data.genres]);
-
-
 
 
     const activeFilters = useMemo(() => {
@@ -246,10 +246,10 @@ export default function BooksIndex() {
 
         const filterParams = {};
         filters.forEach((section) => {
-            let value = section.options.filter(option => option.checked).map(option => option.value).join(',');
+                let value = section.options.filter(option => option.checked).map(option => option.value).join(',');
 
-            if (value)
-                filterParams[section.id] = value;
+                if (value)
+                    filterParams[section.id] = value;
             }
         );
 
@@ -525,7 +525,11 @@ export default function BooksIndex() {
                                             <span>{activeFilter.label}</span>
                                             <button
                                                 type="button"
-                                                onClick={() => handleFilters({name: activeFilter.section, value: activeFilter.label, checked: false})}
+                                                onClick={() => handleFilters({
+                                                    name: activeFilter.section,
+                                                    value: activeFilter.label,
+                                                    checked: false
+                                                })}
                                                 className="ml-1 inline-flex h-4 w-4 flex-shrink-0 rounded-full p-1 text-gray-400 hover:bg-gray-200 hover:text-gray-500"
                                             >
                                               <span className="sr-only">Remove filter for {activeFilter.label}</span>
@@ -543,6 +547,47 @@ export default function BooksIndex() {
                     </If>
                 </section>
             </div>
+            {data && data.recommendedBooks && data.recommendedBooks.length > 0 && (
+                <div className="w-full mb-2">
+                    <h2 className="text-xl font-semibold mb-2">Recommended Books</h2>
+                    <Carousel>
+                        {data.recommendedBooks.map(book => (
+                            <CarouselItem key={'recommended-' + book.id}>
+                                <div className="bg-white rounded-lg flex space-x-6 shadow">
+                                    <div className="w-12 sm:w-24 md:w-48">
+                                        <div className="relative h-0 pb-2/3 pt-2/3">
+                                            <img
+                                                alt={`${book.title}`}
+                                                className="absolute inset-0 w-full h-full object-cover"
+                                                src={BOOK_IMAGE_URL + book.cover}
+                                            />
+                                        </div>
+                                    </div>
+                                    <div className="py-4">
+                                        <h3 className="text-lg font-semibold text-gray-900">
+                                            <Link className="text-blue-800 hover:text-blue-600" to={`/books/${book.id}`}>{book.title}</Link>
+                                        </h3>
+                                        <div className="text-sm font-semibold text-gray-500">{book.author}</div>
+                                        <div className="text-sm font-semibold text-gray-500">{book.genre}</div>
+                                        <div className="flex items-start text-gray-800 mt-2">
+                                            <span className="text-sm">$</span>
+                                            <span
+                                                className="text-2xl font-semibold">{Math.floor(book.priceInPennies / 100)}</span>
+                                            <span className="text-sm mr-0.5">
+                                                {String(book.priceInPennies % 100).padStart(2, '0')}</span>
+                                        </div>
+
+                                        <div className="max-w-sm sm:max-w-md md:max-w-xl lg:max-w-2xl">
+                                            <ReadMore disabled text={book.overview} maxLength={200} />
+                                        </div>
+                                    </div>
+                                </div>
+                            </CarouselItem>
+                        ))}
+                    </Carousel>
+                </div>
+            )}
+
             <div className="grid gap-4 grid-cols-2 sm:grid-cols-3 lg:grid-cols-4">
                 {renderBooks(allBooks, myAddToCart)}
                 {isFetching && (

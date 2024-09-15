@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 
-export default function ReadMore ({ text, maxLength = 100 }) {
+export default function ReadMore ({ text, maxLength = 100, disabled = false }) {
     const [isExpanded, setIsExpanded] = useState(false);
 
     const toggleReadMore = () => {
@@ -15,7 +15,7 @@ export default function ReadMore ({ text, maxLength = 100 }) {
             <p className="mt-1">
                 {displayedText}
             </p>
-            {shouldTruncate && (
+            {shouldTruncate && !disabled && (
                 <button onClick={toggleReadMore} className="text-blue-500 hover:underline mt-1">
                     {isExpanded ? 'Read Less' : 'Read More'}
                 </button>
