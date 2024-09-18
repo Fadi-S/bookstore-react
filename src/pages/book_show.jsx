@@ -8,7 +8,7 @@ import {
     TabPanel,
 } from '@headlessui/react'
 import {BOOK_IMAGE_URL, USER_IMAGE_URL} from "../app/consts";
-import {useEffect, useState} from "react";
+import React, {useEffect, useState} from "react";
 import Rating from "../components/rating";
 import ReadMore from "../components/readmore";
 import {useAppDispatch, useAppSelector} from "../app/hooks";
@@ -17,6 +17,7 @@ import {ExclamationTriangleIcon} from "@heroicons/react/24/outline";
 import {useAddToCartMutation} from "../features/cart/cart_slice";
 import {InformationCircleIcon} from "@heroicons/react/20/solid";
 import {handleAddToCart} from "../app/helpers";
+import {ShoppingCartIcon} from "@heroicons/react/24/solid/index.js";
 
 
 export default function ShowBook() {
@@ -240,9 +241,16 @@ export default function ShowBook() {
                                     <button
                                         type="button"
                                         onClick={() => myAddToCart(book.id)}
-                                        className="mx-auto sm:mx-0 flex max-w-xs flex-1 items-center justify-center rounded-md border border-transparent bg-indigo-600 px-8 py-3 text-base font-medium text-white hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 focus:ring-offset-gray-50 sm:w-full"
+                                        className="inline-flex text-center justify-center items-center
+                                 gap-x-1.5 rounded-md bg-indigo-600 w-full md:w-auto px-6 py-3 md:py-2 text-sm
+                                 font-semibold text-white shadow-sm hover:bg-indigo-500
+                                 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2
+                                 focus-visible:outline-indigo-600"
                                     >
-                                        {isAddingToCart ? "Adding..." : "Add to cart"}
+                                        <ShoppingCartIcon aria-hidden="true" className="-ml-0.5 h-5 w-5"/>
+                                        <span>
+                                            {isAddingToCart ? "Adding..." : "Add to Cart"}
+                                        </span>
                                     </button>
                                 </div>
                             )

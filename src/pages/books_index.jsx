@@ -76,7 +76,7 @@ function renderBooks(books, addToCart) {
             <div className="px-4 py-5 sm:p-4 h-full">
                 <div className="flex flex-col justify-between space-y-4 h-full">
                     <Link className="group" to={`/books/${book.id}`}>
-                        <div className="relative h-0 pb-2/3 pt-2/3">
+                        <div className="relative h-0 pb-1/3 pt-1/3 md:pb-2/3 md:pt-2/3">
                             <img
                                 alt={`${book.title}`}
                                 className="absolute inset-0 w-full h-full object-cover rounded-lg transform transition-transform
@@ -107,7 +107,11 @@ function renderBooks(books, addToCart) {
                             <button
                                 type="button"
                                 onClick={() => addToCart(book.id)}
-                                className="inline-flex text-center justify-center items-center gap-x-1.5 rounded-md bg-indigo-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
+                                className="inline-flex text-center justify-center items-center
+                                 gap-x-1.5 rounded-md bg-indigo-600 w-full md:w-auto md:px-6 py-3 md:py-2 text-sm
+                                 font-semibold text-white shadow-sm hover:bg-indigo-500
+                                 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2
+                                 focus-visible:outline-indigo-600"
                             >
                                 <ShoppingCartIcon aria-hidden="true" className="-ml-0.5 h-5 w-5"/>
                                 <span>Add to Cart</span>
