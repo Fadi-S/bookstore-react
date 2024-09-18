@@ -307,7 +307,7 @@ export default function BooksIndex() {
 
     if (isFetching && allBooks == null) {
         return (
-            <div className="grid gap-4 grid-cols-2 sm:grid-cols-3 lg:grid-cols-4">
+            <div className="grid gap-4 grid-cols-1 sm:grid-cols-2 sm:grid-cols-3 lg:grid-cols-4">
                 {renderEmptyStates(6)}
             </div>
         );
@@ -543,7 +543,7 @@ export default function BooksIndex() {
                     </If>
                 </section>
             </div>
-            <div className="grid gap-4 grid-cols-2 sm:grid-cols-3 lg:grid-cols-4">
+            <div className="grid gap-4 grid-cols-1 sm:grid-cols-2 lg:grid-cols-4">
                 {renderBooks(allBooks, myAddToCart)}
                 {isFetching && (
                     <div className="flex justify-center w-full">
